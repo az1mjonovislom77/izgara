@@ -1,0 +1,37 @@
+# Django-specific files
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media/ # Or wherever your user-uploaded files are stored
+
+# Virtual Environment
+.env
+venv/
+env/
+
+# IDE-specific files (e.g., for PyCharm, VS Code)
+.idea/
+.vscode/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Test/Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+
+# Other temporary or generated files
+*.mo
+
+media/
