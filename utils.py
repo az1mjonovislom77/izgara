@@ -11,7 +11,7 @@ from data import data  # data.py ichidagi list
 
 # Absolute path orqali assets papkasi
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # utils.py joylashgan joy
-ASSETS_PATH = os.path.join(BASE_DIR, "Izgora", "images", "assets")
+ASSETS_PATH = os.path.join(BASE_DIR, "izgora", "images", "assets")
 
 if not os.path.exists(ASSETS_PATH):
     raise FileNotFoundError(f"Papka topilmadi: {ASSETS_PATH}")
