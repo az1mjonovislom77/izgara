@@ -7,7 +7,7 @@ from .models import User
 class MeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "title", "username", "role",)
+        fields = ("id", "name", "username", "role",)
         extra_kwargs = {
             "id": {"read_only": True},
         }
@@ -16,7 +16,7 @@ class MeSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-        instance.title = (validated_data.get("title", instance.title))
+        instance.name = (validated_data.get("name", instance.name))
         instance.username = (validated_data.get("username", instance.username))
         instance.role = validated_data.get("role", instance.role)
         instance.save()

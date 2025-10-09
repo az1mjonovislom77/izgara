@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, Group, Permission
 from django.db import models
@@ -34,7 +36,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         ADMIN = 'a', "admin"
         CAFE = 'c', "cafe"
 
-    title = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    subdomain = models.CharField(max_length=100)
+    secret_key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     username = models.CharField(max_length=100, unique=True)
     payment_status = models.BooleanField(default=False)
     role = models.CharField(max_length=10, choices=UserRoles.choices)

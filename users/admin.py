@@ -13,7 +13,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'title', 'role')
+        fields = ('username', 'name', 'role')
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -35,7 +35,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'title', 'payment_status', 'role', 'password', 'is_active', 'is_staff', 'is_superuser',
+        fields = ('username', 'name', 'payment_status', 'role', 'password', 'is_active', 'is_staff', 'is_superuser',
                   'groups',
                   'user_permissions')
 
@@ -52,20 +52,20 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm
     inlines = [CategoryInline]
 
-    list_display = ('id', 'username', 'payment_status', 'title', 'role', 'is_active', 'is_staff', 'is_superuser')
+    list_display = ('id', 'username', 'payment_status', 'name', 'role', 'is_active', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser')
     ordering = ('username',)
-    search_fields = ('username', 'title')
+    search_fields = ('username', 'name')
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('title', 'role', 'payment_status',)}),
+        ('Personal info', {'fields': ('name', 'role', 'payment_status',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'title', 'role', 'password1', 'password2'),
+            'fields': ('username', 'name', 'role', 'password1', 'password2'),
         }),
     )
