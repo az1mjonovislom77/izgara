@@ -142,14 +142,6 @@ class AdminCategoryCreateAPIView(APIView):
     serializer_class = AdminCategorySerializer
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        user = request.user
-        if not user.is_authenticated or user.role != User.UserRoles.ADMIN:
-            return Response({'detail': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        categories = Category.objects.all()
-        serializer = AdminCategorySerializer(categories, many=True)
-        return Response(serializer.data)
-
     def post(self, request):
         user = request.user
         if not user.is_authenticated or user.role != User.UserRoles.ADMIN:
