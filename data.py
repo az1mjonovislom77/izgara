@@ -895,7 +895,7 @@ data = [
         "description": "Смешанный блин",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "MixGozleme",
-        "category": "v",
+        "category": "Nonushta",
         "rating": 4.5,
         "price": 42000
     },
