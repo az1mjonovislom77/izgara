@@ -1,7 +1,5 @@
 from django.contrib import admin
-from izgora.models import (
-    Category, Product, ProductImage, CategoryImages
-)
+from izgora.models import Category, Product, ProductImage, CategoryImages
 
 
 class ProductImageTabular(admin.TabularInline):
@@ -12,7 +10,18 @@ class ProductImageTabular(admin.TabularInline):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
-    list_display = ('id', 'name', 'slug',)
+    list_display = ('id', 'user', 'name', 'slug',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(CategoryImages)
@@ -22,9 +31,7 @@ class CategoryImagesAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = (
-        'id', 'category', 'title', 'price',
-    )
+    list_display = ('id', 'category', 'title', 'price',)
     inlines = (ProductImageTabular,)
 
 

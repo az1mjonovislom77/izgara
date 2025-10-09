@@ -4,6 +4,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
+from users.models import User
+
 
 def check_image_size(image):
     if image.size > 4 * 1024 * 1024:
@@ -11,6 +13,7 @@ def check_image_size(image):
 
 
 class Category(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories', null=True, blank=True)
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to='images/category/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),

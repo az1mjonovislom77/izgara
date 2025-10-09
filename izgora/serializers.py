@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from users.models import User
 from .models import Category, Product, ProductImage, CategoryImages
 
 
@@ -28,13 +30,13 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = [
-            'id',
-            'title',
-            'description',
-            'price',
-            'created',
-            'category',
-            'category_name',
-            'images',
-        ]
+        fields = ['id', 'title', 'description', 'price', 'created', 'category', 'category_name', 'images']
+
+
+class AdminCategorySerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class Meta:
+        model = Category
+        fields = ['user', 'name', 'slug', 'created']
+        read_only_fields = ['slug', 'created']

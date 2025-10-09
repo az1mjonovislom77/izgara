@@ -27,8 +27,10 @@ SECRET_KEY = 'django-insecure-yg)%b2@ph4oebvyp*u4l^nk#9b7nurvkq%of$^ib#m@@jjit@m
 DEBUG = True
 
 ALLOWED_HOSTS = ["izgora.up.railway.app", "localhost", "127.0.0.1", "*"]
+#
+# CSRF_TRUSTED_ORIGINS = ["https://izgora.up.railway.app"]
 
-CSRF_TRUSTED_ORIGINS = ["https://izgora.up.railway.app"]
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
@@ -41,6 +43,7 @@ LOCAL_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'izgora.apps.IzgoraConfig',
+    'users.apps.UsersConfig',
 ]
 
 THIRD_PARTY_APPS = [

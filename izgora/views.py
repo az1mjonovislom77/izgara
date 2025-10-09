@@ -1,29 +1,60 @@
 from drf_spectacular.utils import extend_schema
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from users.models import User
 from .models import Category, Product, ProductImage, CategoryImages
-from .serializers import (
-    CategorySerializer,
-    ProductSerializer,
-    ProductImageSerializer,
-    CategoryImagesSerializer
-)
+from .serializers import (CategorySerializer, ProductSerializer, ProductImageSerializer, CategoryImagesSerializer,
+                          AdminCategorySerializer)
 
 
 @extend_schema(tags=['Category'])
 class CategoryListCreateAPIView(APIView):
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        categories = Category.objects.all().order_by('-created')
+        user = request.user
+        if user.role == User.UserRoles.ADMIN:
+            categories = Category.objects.all().order_by('-created')
+        else:
+            categories = Category.objects.filter(user=user).order_by('-created')
+
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['Product'])
+class ProductListCreateAPIView(APIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if user.role == User.UserRoles.ADMIN:
+            products = Product.objects.select_related('category').prefetch_related('productimage_set').all().order_by(
+                '-created')
+        else:
+            products = Product.objects.select_related('category').prefetch_related('productimage_set').filter(
+                category__user=user
+            ).order_by('-created')
+
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -31,6 +62,8 @@ class CategoryListCreateAPIView(APIView):
 @extend_schema(tags=['CategoryDetail'])
 class CategoryDetailAPIView(APIView):
     serializer_class = CategorySerializer
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, pk):
         category = get_object_or_404(Category, pk=pk)
         serializer = CategorySerializer(category)
@@ -50,26 +83,11 @@ class CategoryDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@extend_schema(tags=['Product'])
-class ProductListCreateAPIView(APIView):
-    serializer_class = ProductSerializer
-    def get(self, request):
-        products = Product.objects.select_related('category').prefetch_related('productimage_set').all().order_by(
-            '-created')
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 @extend_schema(tags=['ProductDetail'])
 class ProductDetailAPIView(APIView):
     serializer_class = ProductSerializer
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         serializer = ProductSerializer(product)
@@ -113,6 +131,30 @@ class CategoryImagesListCreateAPIView(APIView):
 
     def post(self, request):
         serializer = CategoryImagesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['Category'])
+class AdminCategoryCreateAPIView(APIView):
+    serializer_class = AdminCategorySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        if not user.is_authenticated or user.role != User.UserRoles.ADMIN:
+            return Response({'detail': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+        categories = Category.objects.all()
+        serializer = AdminCategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        user = request.user
+        if not user.is_authenticated or user.role != User.UserRoles.ADMIN:
+            return Response({'detail': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = AdminCategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
