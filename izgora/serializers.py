@@ -4,18 +4,10 @@ from users.models import User
 from .models import Category, Product, ProductImage, CategoryImages
 
 
-class CategoryImagesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoryImages
-        fields = ['id', 'image']
-
-
 class CategorySerializer(serializers.ModelSerializer):
-    images = CategoryImagesSerializer(many=True, read_only=True)
-
     class Meta:
         model = Category
-        fields = ['id', 'name', 'image', 'slug', 'images']
+        fields = ['id', 'name', 'image']
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -38,5 +30,5 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['user', 'name', 'slug', 'created']
+        fields = ['user', 'name', 'created']
         read_only_fields = ['slug', 'created']
