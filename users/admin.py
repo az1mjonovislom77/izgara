@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django import forms
+
+from izgora.models import Category
 from .models import User
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
@@ -33,23 +35,31 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'title', 'role', 'password', 'is_active', 'is_staff', 'is_superuser', 'groups',
+        fields = ('username', 'title', 'payment_status', 'role', 'password', 'is_active', 'is_staff', 'is_superuser',
+                  'groups',
                   'user_permissions')
+
+
+class CategoryInline(admin.TabularInline):
+    model = Category
+    extra = 0
+    fields = ('name', 'slug', 'created')
 
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
+    inlines = [CategoryInline]
 
-    list_display = ('id','username', 'title', 'role', 'is_active', 'is_staff', 'is_superuser')
+    list_display = ('id', 'username', 'payment_status', 'title', 'role', 'is_active', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser')
     ordering = ('username',)
     search_fields = ('username', 'title')
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('title', 'role')}),
+        ('Personal info', {'fields': ('title', 'role', 'payment_status',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
 

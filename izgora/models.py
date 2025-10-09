@@ -13,13 +13,13 @@ def check_image_size(image):
 
 
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='categories', null=True, blank=True)
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to='images/category/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
         check_image_size])
     slug = models.SlugField(max_length=200, unique=True, blank=True)
-    created = models.DateTimeField(default=timezone.now)
+    created = models.DateField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

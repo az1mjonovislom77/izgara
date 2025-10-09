@@ -1,7 +1,6 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, Group, Permission
 from django.db import models
-import uuid
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import BaseUserManager
 
@@ -37,6 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     title = models.CharField(max_length=100)
     username = models.CharField(max_length=100, unique=True)
+    payment_status = models.BooleanField(default=False)
     role = models.CharField(max_length=10, choices=UserRoles.choices)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
