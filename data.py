@@ -21,8 +21,8 @@ data = [
     },
     {
         "id": "3",
-        "name": "Kapriz",
-        "description": "каприз",
+        "name": "Caprice",
+        "description": "Caprice",
         "about": "Yangi pamidor va cheri, yumshoq mozzarella, xushbo‘y rukola, feslegen sousining nozik hidi va yong‘oqning yengil qovurilgan ta’mi — barchasi mukammal uyg‘unlikda sizga Italiya lazzatini taqdim etadi.",
         "image": "kapriz",
         "category": "Salatlar",
@@ -117,14 +117,14 @@ data = [
         "image": "classicHotDog",
         "category": "Burgerlar",
         "rating": 4.3,
-        "price": 18.950
+        "price": 18.95
     },
     {
         "id": "13",
         "name": "Izgara hot-dog",
         "description": "Изгара хот-дог",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe",
+        "image": "Kofe080",
         "category": "Hotdog",
         "rating": 4.2,
         "price": 15950
@@ -150,22 +150,12 @@ data = [
         "price": 179950
     },
     {
-        "id": "16",
-        "name": "Izgara burger set",
-        "description": "Изгара бургер сет",
-        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe",
-        "category": "Kombo",
-        "rating": 4.5,
-        "price": 154950
-    },
-    {
         "id": "17",
         "name": "Cheese combo",
         "description": "Чиз комбо",
         "about": "Yangi pamidor va bodring, aysberg sousining ishtaha ocharligi, qovurilgan mol kotletining tiniq ta’mi va ferminey sousining boyligi — barchasi cheddar bilan birgalikda mukammal uyg‘unlikda.",
         "image": "cheeseCombo",
-        "category": "Kombo",
+        "category": "Burgerlar",
         "rating": 4.7,
         "price": 52950
     },
@@ -174,8 +164,8 @@ data = [
         "name": "Izgara combo",
         "description": "Изгара комбо",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe",
-        "category": "Kombo",
+        "image": "Kofe080",
+        "category": "Burgerlar",
         "rating": 4.4,
         "price": 46950
     },
@@ -184,8 +174,8 @@ data = [
         "name": "Classic combo",
         "description": "Классическое комбо",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe",
-        "category": "Kombo",
+        "image": "Kofe080",
+        "category": "Burgerlar",
         "rating": 4.5,
         "price": 49950
     },
@@ -204,7 +194,7 @@ data = [
         "name": "Po derevenskiy",
         "description": "Картофель по-деревенски",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "fri",
+        "image": "poderevenskiy",
         "category": "Fri",
         "rating": 4.4,
         "price": 18000
@@ -384,7 +374,7 @@ data = [
         "name": "Bubble vafli shokoladli",
         "description": "Бабл вафли шоколадный",
         "about": "Har bir bo‘lak — lazzat, yumshoqlik va quvonch uyg‘unligi. Shirin ta’m sizga iliq kayfiyat va yoqimli dam hadya etadi.",
-        "image": "Kofe",
+        "image": "Kofe080",
         "category": "Shirinliklar",
         "rating": 4.7,
         "price": 39950
@@ -460,16 +450,6 @@ data = [
         "price": 20000
     },
     {
-        "id": "53",
-        "name": "Milksheyk",
-        "description": "Милкшейк",
-        "about": "Har bir qultumda yangilik va tetiklik! Yengil, yoqimli ta’m va tabiiy lazzat uyg‘unligi sizga kayfiyat bag‘ishlaydi.",
-        "image": "Kofe",
-        "category": "Ichimliklar",
-        "rating": 4.8,
-        "price": 25000
-    },
-    {
         "id": "54",
         "name": "Moxito",
         "description": "Мохито",
@@ -500,6 +480,16 @@ data = [
         "price": 25000
     },
     {
+        "id": "57",
+        "name": " Lavash Mini",
+        "description": " Мини лаваш ",
+        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
+        "image": "lavash",
+        "category": "Lavash",
+        "rating": 4.5,
+        "price": 33950
+    },
+    {
         "id": "58",
         "name": "Standart Lavash",
         "description": "Стандартный лаваш",
@@ -510,18 +500,8 @@ data = [
         "price": 37950
     },
     {
-        "id": "57",
-        "name": " Lavash Mini",
-        "description": "Мини лаваш",
-        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "lavash",
-        "category": "Lavash",
-        "rating": 4.5,
-        "price": 33950
-    },
-    {
         "id": "59",
-        "name": "Pishloqli Lavash",
+        "name": " Pishloqli Lavash",
         "description": "Лаваш С сыром",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "lavash",
@@ -530,8 +510,18 @@ data = [
         "price": 40950
     },
     {
+        "id": "57",
+        "name": " Achchiq lavash",
+        "description": " Achchiq lavash ",
+        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
+        "image": "lavash",
+        "category": "Lavash",
+        "rating": 4.5,
+        "price": 40950
+    },
+    {
         "id": "60",
-        "name": "Vıp Lavash",
+        "name": " Vıp Lavash",
         "description": "Vıp Лаваш",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "lavash",
@@ -544,7 +534,7 @@ data = [
         "name": "BIG Lavash",
         "description": "Большой лаваш",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "bigLavash",
+        "image": "biglavash",
         "category": "Lavash",
         "rating": 4.9,
         "price": 99950
@@ -571,7 +561,7 @@ data = [
     },
     {
         "id": "66",
-        "name": "Goshtli Pizza Kichik",
+        "name": "Go'shtli Pizza Kichik",
         "about": "Boy italyan sousi, yumshoq go‘sht va eritilgan sirning uyg‘unligi — Ferminey sousining mayinligi bilan to‘ldirilgan, o‘ziga xos lazzat tajribasi.",
         "description": "Мясная пицца",
         "image": "goshtli",
@@ -581,7 +571,7 @@ data = [
     },
     {
         "id": "67",
-        "name": "Goshtli Pizza Orta",
+        "name": "Go'shtli Pizza O'rta",
         "about": "Boy italyan sousi, yumshoq go‘sht va eritilgan sirning uyg‘unligi — Ferminey sousining mayinligi bilan to‘ldirilgan, o‘ziga xos lazzat tajribasi.",
         "description": "Мясная пицца",
         "image": "goshtli",
@@ -591,7 +581,7 @@ data = [
     },
     {
         "id": "68",
-        "name": "Goshtli Pizza Katta",
+        "name": "Go'shtli Pizza Katta",
         "about": "Boy italyan sousi, yumshoq go‘sht va eritilgan sirning uyg‘unligi — Ferminey sousining mayinligi bilan to‘ldirilgan, o‘ziga xos lazzat tajribasi.",
         "description": "Мясная пицца",
         "image": "goshtli",
@@ -601,7 +591,7 @@ data = [
     },
     {
         "id": "69",
-        "name": "Goshtli Pizza Bahaybat",
+        "name": "Go'shtli Pizza Bahaybat",
         "about": "Boy italyan sousi, yumshoq go‘sht va eritilgan sirning uyg‘unligi — Ferminey sousining mayinligi bilan to‘ldirilgan, o‘ziga xos lazzat tajribasi.",
         "description": "Мясная пицца",
         "image": "goshtli",
@@ -641,7 +631,7 @@ data = [
     },
     {
         "id": "78",
-        "name": "Americano Steak Pizza Orta",
+        "name": "Americano Steak Pizza O'rta",
         "description": "Пицца американо стейк",
         "about": "Yumshoq go‘sht, bulg‘or qalampiri, piyoz va qo‘ziqorin italyan sousining boy ta’mi va eritilgan sirning mayinligi bilan uyg‘unlashgan.",
         "image": "americanoSteak",
@@ -669,7 +659,6 @@ data = [
         "rating": 4.7,
         "price": 130000
     },
-
     {
         "id": "81",
         "name": "Pepperoni Pizza Kichik",
@@ -682,7 +671,7 @@ data = [
     },
     {
         "id": "82",
-        "name": "Pepperoni Pizza Orta",
+        "name": "Pepperoni Pizza O'rta",
         "description": "Пепперони пицца",
         "about": "Haqiqiy Italiya lazzati! Kalbasa, qo‘ziqorin va sir italyan sousining boy ta’mi bilan birlashib, sizni birinchi luqmadanoq rom etadi",
         "image": "pepperoni",
@@ -772,7 +761,7 @@ data = [
     },
     {
         "id": "91",
-        "name": "Mexicano pizza Orta",
+        "name": "Mexicano pizza O'rta",
         "description": "мексиканская пицца",
         "about": "Sous va sirning yumshoqligi, go‘shtning tiniq ta’mi, jalapeno va sabzavotlarning tetiklantiruvchi uyg‘unligi — cherri pomidor bilan bezatilgan mukammal lazzat kombinatsiyasi.",
         "image": "mexicano",
@@ -862,53 +851,33 @@ data = [
     },
     {
         "id": "98",
-        "name": "GÖZLEME",
-        "description": "GÖZLEME",
+        "name": "MIX GÖZLEME",
+        "description": "MIX GÖZLEME",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "Gozleme",
         "category": "Nonushta",
         "rating": 4.4,
-        "price": 32000
+        "price": 42000
     },
     {
         "id": "99",
-        "name": "QAVURMALİ TUXUM",
-        "description": "QAVURMALİ TUXUM",
+        "name": "Turkcha nonushta",
+        "description": "Turkcha nonushta",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "Qavurmalituxum",
         "category": "Nonushta",
         "rating": 4.7,
-        "price": 29950
+        "price": 39000
     },
     {
         "id": "100",
-        "name": "TUXUM SASISKA",
-        "description": "ЯЙЦО Сасиска",
+        "name": "Classic nonushta",
+        "description": "Classic nonushta",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "tuxumSasiska",
         "category": "Nonushta",
         "rating": 4.6,
-        "price": 32000
-    },
-    {
-        "id": "101",
-        "name": "SİRLİ TOST",
-        "description": "сырный тост",
-        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "sirliTost",
-        "category": "Nonushta",
-        "rating": 4.6,
-        "price": 39950
-    },
-    {
-        "id": "102",
-        "name": "Omlet",
-        "description": "Омлет",
-        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "omlet",
-        "category": "Nonushta",
-        "rating": 4.9,
-        "price": 28000
+        "price": 39000
     },
     {
         "id": "103",
@@ -917,38 +886,18 @@ data = [
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "izgaraTost",
         "category": "Nonushta",
-        "rating": 5.0,
+        "rating": 5,
         "price": 42000
-    },
-    {
-        "id": "104",
-        "name": "Classıc nonushta",
-        "description": "Классический завтрак",
-        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "classikNonushta",
-        "category": "Nonushta",
-        "rating": 4.8,
-        "price": 39000
     },
     {
         "id": "105",
-        "name": "Mıx gözleme",
+        "name": "Mıx MIX GÖZLEME",
         "description": "Смешанный блин",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
         "image": "MixGozleme",
-        "category": "Turkcha",
+        "category": "v",
         "rating": 4.5,
         "price": 42000
-    },
-    {
-        "id": "106",
-        "name": "Turkcha nonushta",
-        "description": "турецкий завтрак",
-        "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "turkchaNonushta",
-        "category": "Nonushta",
-        "rating": 4.7,
-        "price": 39000
     },
     {
         "id": "107",
@@ -959,6 +908,5 @@ data = [
         "category": "Nonushta",
         "rating": 4.9,
         "price": 35000
-    },
-
+    }
 ]

@@ -2,15 +2,13 @@ import os
 import django
 from django.utils.text import slugify
 
-# Django setup
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from izgora.models import Category, Product, ProductImage
-from data import data  # data.py ichidagi list
+from data import data
 
-# Absolute path orqali assets papkasi
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # utils.py joylashgan joy
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ASSETS_PATH = os.path.join(BASE_DIR, "izgora", "images", "assets")
 
 if not os.path.exists(ASSETS_PATH):
@@ -18,7 +16,6 @@ if not os.path.exists(ASSETS_PATH):
 files_in_folder = os.listdir(ASSETS_PATH)
 
 for item in data:
-    # Category nomini tozalash
     category_name = str(item.get("category", "")).strip()
     if not category_name:
         print(f"⚠️ Category nomi bo‘sh, o‘tkazildi: {item.get('name')}")
@@ -42,16 +39,15 @@ for item in data:
         print(f"⚠️ Fayl topilmadi: {image_name}")
         continue
 
-    # Product yaratish
     product = Product.objects.create(
         category=category,
         title=item.get("name", ""),
         description=item.get("description", ""),
         about=item.get("about", ""),
-        price=item.get("price", 0)
+        price=item.get("price", 0),
+        rating=item.get("rating", 0)
     )
 
-    # ProductImage yaratish
     ProductImage.objects.create(
         product=product,
         image=f"assets/{matched_file}"
