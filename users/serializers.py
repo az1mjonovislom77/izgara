@@ -67,4 +67,36 @@ class LogoutSerializer(serializers.Serializer):
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'subdomain', 'name', 'role', 'payment_status', 'is_active', 'is_superuser',)
+        fields = ('id', 'username', 'subdomain', 'secret_key', 'name', 'role', 'payment_status', 'is_active',
+                  'is_superuser',)
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'name', 'role', 'password', 'subdomain']
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'name', 'role', 'subdomain', 'payment_status', 'is_active']
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.name = validated_data.get('name', instance.name)
+        instance.role = validated_data.get('role', instance.role)
+        instance.subdomain = validated_data.get('subdomain', instance.subdomain)
+        instance.payment_status = validated_data.get('payment_status', instance.payment_status)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
+        return instance
