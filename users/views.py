@@ -8,6 +8,7 @@ from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import LoginSerializer, LogoutSerializer, MeSerializer
 from .models import User
+from .serializers import UserListSerializer
 
 
 @extend_schema(tags=['Login'])
@@ -78,3 +79,18 @@ class DeleteAccountAPIView(APIView):
             user.save()
             return Response({'message': 'Account has been deleted'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'Account not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['User'])
+class UserListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if not user.is_superuser and user.role != User.UserRoles.ADMIN:
+            return Response({"detail": "Ruxsat yo'q"}, status=status.HTTP_403_FORBIDDEN)
+
+        users = User.objects.all().order_by('username')
+        serializer = UserListSerializer(users, many=True)
+        return Response(serializer.data)
