@@ -124,7 +124,7 @@ data = [
         "name": "Izgara hot-dog",
         "description": "Изгара хот-дог",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe080",
+        "image": "Kofe",
         "category": "Hotdog",
         "rating": 4.2,
         "price": 15950
@@ -164,7 +164,7 @@ data = [
         "name": "Izgara combo",
         "description": "Изгара комбо",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe080",
+        "image": "Kofe",
         "category": "Burgerlar",
         "rating": 4.4,
         "price": 46950
@@ -174,7 +174,7 @@ data = [
         "name": "Classic combo",
         "description": "Классическое комбо",
         "about": "Har bir taom — sevgi va e’tibor bilan tayyorlangan mukammal lazzat uyg‘unligi. Faqat eng sifatli mahsulotlardan, siz uchun maxsus.",
-        "image": "Kofe080",
+        "image": "Kofe",
         "category": "Burgerlar",
         "rating": 4.5,
         "price": 49950
@@ -374,7 +374,7 @@ data = [
         "name": "Bubble vafli shokoladli",
         "description": "Бабл вафли шоколадный",
         "about": "Har bir bo‘lak — lazzat, yumshoqlik va quvonch uyg‘unligi. Shirin ta’m sizga iliq kayfiyat va yoqimli dam hadya etadi.",
-        "image": "Kofe080",
+        "image": "Kofe",
         "category": "Shirinliklar",
         "rating": 4.7,
         "price": 39950
