@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     name = models.CharField(max_length=100)
     subdomain = models.CharField(max_length=100)
-    secret_key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    secret_key = models.UUIDField(default=uuid.uuid4, unique=True)
     username = models.CharField(max_length=100, unique=True)
     payment_status = models.BooleanField(default=False)
     role = models.CharField(max_length=10, choices=UserRoles.choices)
@@ -50,11 +50,11 @@ class User(AbstractBaseUser, PermissionsMixin):
                                               verbose_name='user permissions',
                                               help_text='Specific permissions for this user.', )
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ['title', 'role']
+    REQUIRED_FIELDS = ['name', 'role']
     objects = UserManager()
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def get_tokens(self):
         refresh = RefreshToken.for_user(self)
