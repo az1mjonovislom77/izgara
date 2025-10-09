@@ -7,7 +7,7 @@ from .models import User
 class MeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "name", "username", "role",)
+        fields = ("id", "name", "username", "role", "payment_status")
         extra_kwargs = {
             "id": {"read_only": True},
         }
