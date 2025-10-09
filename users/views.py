@@ -12,6 +12,8 @@ from .models import User
 
 @extend_schema(tags=['Login'])
 class LoginAPIView(APIView):
+    serializer_class = LoginSerializer
+
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
