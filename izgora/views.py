@@ -6,8 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from users.models import User
 from .models import Category, Product, ProductImage, CategoryImages
-from .serializers import (CategorySerializer, ProductSerializer, ProductImageSerializer, CategoryImagesSerializer,
-                          AdminCategorySerializer)
+from .serializers import (CategorySerializer, ProductSerializer, ProductImageSerializer, AdminCategorySerializer)
 
 
 @extend_schema(tags=['Category'])
