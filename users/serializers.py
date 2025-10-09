@@ -19,6 +19,7 @@ class MeSerializer(serializers.ModelSerializer):
         instance.name = (validated_data.get("name", instance.name))
         instance.username = (validated_data.get("username", instance.username))
         instance.role = validated_data.get("role", instance.role)
+        instance.payment_status = validated_data.get("payment_status", instance.payment_status)
         instance.save()
         return instance
 
