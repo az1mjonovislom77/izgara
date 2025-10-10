@@ -1,9 +1,13 @@
 import uuid
+import qrcode
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, Group, Permission
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import BaseUserManager
+from io import BytesIO
+from django.core.files import File
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -65,8 +69,29 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'user'
 
-#
-# class QrCode(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.SET_NULL)
-#     image = models.ImageField(upload_to='qrcodes')
-#     link = models.URLField(max_length=200)
+
+class QrCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='qrcodes')
+    link = models.URLField(max_length=500)
+    image = models.ImageField(upload_to='qrcodes', blank=True, null=True)
+    created = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = QrCode.objects.filter(pk=self.pk).first()
+            if old and old.link != self.link:
+                if old.image:
+                    old.image.delete(save=False)
+                self.image = None
+
+        if not self.image:
+            qr_img = qrcode.make(self.link)
+            buffer = BytesIO()
+            qr_img.save(buffer, format='PNG')
+            file_name = f"qr_{self.user.username}_{uuid.uuid4().hex[:8]}.png"
+            self.image.save(file_name, File(buffer), save=False)
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"QR for {self.user.username}"
