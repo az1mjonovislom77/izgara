@@ -22,11 +22,11 @@ class CategoryListCreateAPIView(APIView):
         else:
             categories = Category.objects.filter(user=user).order_by('-created')
 
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -48,11 +48,11 @@ class ProductListCreateAPIView(APIView):
                 category__user=user
             ).order_by('-created')
 
-        serializer = ProductSerializer(products, many=True)
+        serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        serializer = ProductSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -66,12 +66,12 @@ class CategoryDetailAPIView(APIView):
 
     def get(self, request, pk):
         category = get_object_or_404(Category, pk=pk)
-        serializer = CategorySerializer(category)
+        serializer = CategorySerializer(category, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, pk):
         category = get_object_or_404(Category, pk=pk)
-        serializer = CategorySerializer(category, data=request.data, partial=True)
+        serializer = CategorySerializer(category, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -90,12 +90,12 @@ class ProductDetailAPIView(APIView):
 
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product)
+        serializer = ProductSerializer(product, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        serializer = ProductSerializer(product, data=request.data, partial=True)
+        serializer = ProductSerializer(product, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -111,11 +111,11 @@ class ProductDetailAPIView(APIView):
 class ProductImageListCreateAPIView(APIView):
     def get(self, request):
         images = ProductImage.objects.all()
-        serializer = ProductImageSerializer(images, many=True)
+        serializer = ProductImageSerializer(images, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ProductImageSerializer(data=request.data)
+        serializer = ProductImageSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -131,7 +131,7 @@ class AdminCategoryCreateAPIView(APIView):
         user = request.user
         if not user.is_authenticated or user.role != User.UserRoles.ADMIN:
             return Response({'detail': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        serializer = AdminCategorySerializer(data=request.data)
+        serializer = AdminCategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -159,7 +159,7 @@ class CategoryBySecretKeyAPIView(APIView):
             )
 
         categories = Category.objects.filter(user=user)
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

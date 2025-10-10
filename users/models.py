@@ -64,3 +64,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'user'
+
+#
+# class QrCode(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.SET_NULL)
+#     image = models.ImageField(upload_to='qrcodes')
+#     link = models.URLField(max_length=200)
