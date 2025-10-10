@@ -179,3 +179,18 @@ class ProductCategoryBySecretKeyAPIView(APIView):
         categories = Category.objects.filter(user=user)
         serializer = ProductByCategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+@extend_schema(tags=['Category'])
+class CategoryByUserIdAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"error": "User topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        categories = Category.objects.filter(user=user)
+        serializer = CategorySerializer(categories, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
