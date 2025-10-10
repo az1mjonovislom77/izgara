@@ -1,7 +1,6 @@
 from rest_framework import serializers
-
 from users.models import User
-from .models import Category, Product, ProductImage, CategoryImages
+from .models import Category, Product, ProductImage
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -30,7 +29,7 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['user', 'name', 'created']
+        fields = ['user', 'name', 'image', 'created']
         read_only_fields = ['slug', 'created']
 
 

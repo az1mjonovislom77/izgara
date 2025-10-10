@@ -1,5 +1,5 @@
 from django.contrib import admin
-from izgora.models import Category, Product, ProductImage, CategoryImages
+from izgora.models import Category, Product, ProductImage
 
 
 class ProductImageTabular(admin.TabularInline):

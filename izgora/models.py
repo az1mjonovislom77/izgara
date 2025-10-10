@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
-
 from users.models import User
 
 
@@ -17,7 +16,7 @@ class Category(models.Model):
     name = models.CharField(max_length=200)
     image = models.ImageField(upload_to='images/category/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
-        check_image_size])
+        check_image_size], blank=True, null=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     created = models.DateField(default=timezone.now)
 
@@ -66,13 +65,3 @@ class ProductImage(models.Model):
         db_table = 'productimage'
         verbose_name = 'Product image'
         verbose_name_plural = 'Product images'
-
-
-class CategoryImages(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='images/category/', validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'heic', 'heif', 'avif']),
-        check_image_size])
-
-    def __str__(self):
-        return str(self.category)

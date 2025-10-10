@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from users.models import User
-from .models import Category, Product, ProductImage, CategoryImages
+from .models import Category, Product, ProductImage
 from .serializers import (CategorySerializer, ProductSerializer, ProductImageSerializer, AdminCategorySerializer,
                           ProductByCategorySerializer, )
 
