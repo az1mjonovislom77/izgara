@@ -18,7 +18,7 @@ class Category(models.Model):
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
         check_image_size], blank=True, null=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
-    created = models.DateField(default=timezone.now)
+    created = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
