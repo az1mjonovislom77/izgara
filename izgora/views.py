@@ -6,7 +6,8 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from users.models import User
 from .models import Category, Product, ProductImage, CategoryImages
-from .serializers import (CategorySerializer, ProductSerializer, ProductImageSerializer, AdminCategorySerializer)
+from .serializers import (CategorySerializer, ProductSerializer, ProductImageSerializer, AdminCategorySerializer,
+                          ProductByCategorySerializer, )
 
 
 @extend_schema(tags=['Category'])
@@ -122,21 +123,6 @@ class ProductImageListCreateAPIView(APIView):
 
 
 @extend_schema(tags=['Category'])
-class CategoryImagesListCreateAPIView(APIView):
-    def get(self, request):
-        images = CategoryImages.objects.all()
-        serializer = CategoryImagesSerializer(images, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = CategoryImagesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@extend_schema(tags=['Category'])
 class AdminCategoryCreateAPIView(APIView):
     serializer_class = AdminCategorySerializer
     permission_classes = (IsAuthenticated,)
@@ -150,3 +136,46 @@ class AdminCategoryCreateAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['Category'])
+class CategoryBySecretKeyAPIView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        secret_key = request.query_params.get('secret_key')
+
+        if not secret_key:
+            return Response(
+                {"detail": "secret_key kiritilmadi. Masalan: ?secret_key=<uuid>"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(secret_key=secret_key)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Bunday secret_key topilmadi"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        categories = Category.objects.filter(user=user)
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['Category'])
+class ProductCategoryBySecretKeyAPIView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        secret_key = request.query_params.get('secret_key')
+        if not secret_key:
+            return Response({"error": "secret_key kiritilmadi"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(secret_key=secret_key)
+        except User.DoesNotExist:
+            return Response({"error": "User topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        categories = Category.objects.filter(user=user)
+        serializer = ProductByCategorySerializer(categories, many=True, context={'request': request})
+        return Response(serializer.data)

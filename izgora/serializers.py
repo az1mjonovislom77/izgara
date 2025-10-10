@@ -32,3 +32,11 @@ class AdminCategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['user', 'name', 'created']
         read_only_fields = ['slug', 'created']
+
+
+class ProductByCategorySerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug', 'image', 'created', 'products', ]

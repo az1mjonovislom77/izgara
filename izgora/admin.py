@@ -24,11 +24,6 @@ class CategoryAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(CategoryImages)
-class CategoryImagesAdmin(admin.ModelAdmin):
-    list_display = ('id', 'category', 'image')
-
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'category', 'title', 'price',)
