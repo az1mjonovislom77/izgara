@@ -1,8 +1,9 @@
 import uuid
 import qrcode
+from django.core.exceptions import ValidationError
 from django.db import models
 from io import BytesIO
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.utils import timezone
 
 from users.models import User
@@ -15,19 +16,16 @@ class QrCode(models.Model):
     created = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
-        if self.pk:
-            old = QrCode.objects.filter(pk=self.pk).first()
-            if old and old.link != self.link:
-                if old.image:
-                    old.image.delete(save=False)
-                self.image = None
+        existing = QrCode.objects.filter(user=self.user, link=self.link).exclude(pk=self.pk)
+        if existing.exists():
+            raise ValidationError("Bu foydalanuvchi uchun bu link bo‘yicha QR kod allaqachon mavjud!")
 
-        if not self.image:
+        if not self.image and self.link:
             qr_img = qrcode.make(self.link)
             buffer = BytesIO()
             qr_img.save(buffer, format='PNG')
             file_name = f"qr_{self.user.username}_{uuid.uuid4().hex[:8]}.png"
-            self.image.save(file_name, File(buffer), save=False)
+            self.image.save(file_name, ContentFile(buffer.getvalue()), save=False)
 
         super().save(*args, **kwargs)
 

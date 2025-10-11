@@ -52,7 +52,7 @@ class CategoryInline(admin.TabularInline):
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    inlines = [CategoryInline]
+    inlines = [CategoryInline, QrCodeInline]
 
     list_display = ('id', 'username', 'payment_status', 'name', 'role', 'is_active', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser')
