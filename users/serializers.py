@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth import get_user_model
-from .models import QrCode
 
 User = get_user_model()
 
@@ -101,17 +100,3 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
-
-
-class QrCodeSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = QrCode
-        fields = ['id', 'user', 'link', 'image', 'created']
-
-    def get_image(self, obj):
-        request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url') and request:
-            return request.build_absolute_uri(obj.image.url)
-        return None

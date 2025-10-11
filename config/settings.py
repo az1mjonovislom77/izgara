@@ -24,6 +24,7 @@ LOCAL_APPS = [
     'django.contrib.staticfiles',
     'izgora.apps.IzgoraConfig',
     'users.apps.UsersConfig',
+    'utils.apps.UtilsConfig',
 ]
 
 THIRD_PARTY_APPS = [

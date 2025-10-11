@@ -14,6 +14,7 @@ def check_image_size(image):
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='categories', null=True, blank=True)
     name = models.CharField(max_length=200)
+    emoji = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(upload_to='images/category/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
         check_image_size], blank=True, null=True)
