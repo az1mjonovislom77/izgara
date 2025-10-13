@@ -18,23 +18,10 @@ class QrCodeGenerateAPIView(APIView):
     serializer_class = QrCodeSerializer
 
     def post(self, request):
-        user_id = request.data.get('user')
-        link = request.data.get('link')
-
-        if not user_id or not link:
-            return Response({'error': 'user va link kerak'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({'error': 'User topilmadi'}, status=status.HTTP_404_NOT_FOUND)
-
-        if request.user.role != User.UserRoles.ADMIN:
-            return Response({'error': 'Sizda ruxsat yo‘q'}, status=status.HTTP_403_FORBIDDEN)
-
-        qr = QrCode.objects.create(user=user, link=link)
-        serializer = QrCodeSerializer(qr, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        qr = serializer.save()
+        return Response(self.serializer_class(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
 class QrCodesByUserDownloadAPIView(APIView):

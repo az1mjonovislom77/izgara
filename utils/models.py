@@ -10,15 +10,21 @@ from users.models import User
 
 
 class QrCode(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='qrcodes')
-    link = models.URLField(max_length=500)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='qrcode')
+    link = models.CharField(max_length=500)
     image = models.ImageField(upload_to='qrcodes', blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        verbose_name = "QR Code"
+        verbose_name_plural = "QR Codes"
+
+    def clean(self):
+        if not self.pk and QrCode.objects.filter(user=self.user).exists():
+            raise ValidationError("Bu foydalanuvchi uchun QR kod allaqachon yaratilgan!")
+
     def save(self, *args, **kwargs):
-        existing = QrCode.objects.filter(user=self.user, link=self.link).exclude(pk=self.pk)
-        if existing.exists():
-            raise ValidationError("Bu foydalanuvchi uchun bu link bo‘yicha QR kod allaqachon mavjud!")
+        self.clean()
 
         if not self.image and self.link:
             qr_img = qrcode.make(self.link)
