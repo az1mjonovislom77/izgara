@@ -24,6 +24,7 @@ class QrCodeGenerateAPIView(APIView):
         return Response(self.serializer_class(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
+@extend_schema(tags=['QR Code'])
 class QrCodesByUserDownloadAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
