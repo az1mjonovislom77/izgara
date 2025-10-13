@@ -6,9 +6,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-yg)%b2@ph4oebvyp*u4l^nk#9b7nurvkq%of$^ib#m@@jjit@m'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["izgora.up.railway.app", "localhost", "127.0.0.1", "*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
 #
 # CSRF_TRUSTED_ORIGINS = ["https://izgora.up.railway.app"]
 
