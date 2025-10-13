@@ -78,3 +78,6 @@ class QrCodeGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = QrCode
         fields = '__all__'
+
+
+

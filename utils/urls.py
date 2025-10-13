@@ -3,9 +3,10 @@ from .views import QrCodeGenerateAPIView, QrCodesByUserDownloadAPIView, QrCodeUp
     QrCodeDeleteAPIView
 
 urlpatterns = [
-    path('generate/', QrCodeGenerateAPIView.as_view(), name='qr-generate'),
-    path('download/<int:user_id>/', QrCodesByUserDownloadAPIView.as_view(), name='qrcode-download-by-user'),
-    path('update/<int:pk>/', QrCodeUpdateAPIView.as_view(), name='qr-update'),
+    path('admin-download/<int:user_id>/', QrCodesByUserDownloadAPIView.as_view(), name='qrcode-download-by-user'),
+    path('download/', QrCodesByUserDownloadAPIView.as_view(), name='qrcode-download-self'),
     path('all/', QrCodeGetAPIView.as_view(), name='qr-all'),
+    path('generate/', QrCodeGenerateAPIView.as_view(), name='qr-generate'),
+    path('update/<int:pk>/', QrCodeUpdateAPIView.as_view(), name='qr-update'),
     path('delete/<int:pk>/', QrCodeDeleteAPIView.as_view(), name='qr-delete'),
 ]

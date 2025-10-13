@@ -78,12 +78,36 @@ class QrCodeDeleteAPIView(APIView):
 class QrCodesByUserDownloadAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        qrcodes = QrCode.objects.filter(user=user)
+    def get(self, request, user_id=None):
+        current_user = request.user
+        if current_user.role == User.UserRoles.ADMIN:
+            if not user_id:
+                return Response(
+                    {"error": "Admin user_id ni kiritishi kerak!"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            target_user = get_object_or_404(User, id=user_id)
 
+        elif current_user.role == User.UserRoles.CAFE:
+            if user_id and user_id != current_user.id:
+                return Response(
+                    {"error": "Siz faqat o‘zingizga tegishli QR kodni yuklab olishingiz mumkin!"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            target_user = current_user
+
+        else:
+            return Response(
+                {"error": "Sizda QR kodlarni yuklab olish uchun ruxsat yo‘q!"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        qrcodes = QrCode.objects.filter(user=target_user)
         if not qrcodes.exists():
-            return Response({"detail": "Bu foydalanuvchida QR kodlar mavjud emas"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Bu foydalanuvchida QR kodlar mavjud emas."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         buffer = BytesIO()
         with zipfile.ZipFile(buffer, "w") as zip_file:
@@ -93,7 +117,7 @@ class QrCodesByUserDownloadAPIView(APIView):
                     zip_file.write(qr.image.path, arcname=filename)
 
         buffer.seek(0)
-        zip_filename = f"{user.username}_qrcodes.zip"
+        zip_filename = f"{target_user.username}_qrcodes.zip"
         response = HttpResponse(buffer, content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
         return response
