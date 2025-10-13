@@ -1,3 +1,7 @@
+import uuid
+from io import BytesIO
+import qrcode
+from django.core.files.base import ContentFile
 from rest_framework import serializers
 from utils.models import QrCode
 from users.models import User
@@ -44,3 +48,33 @@ class QrCodeSerializer(serializers.ModelSerializer):
             )
 
         return attrs
+
+
+class QrCodeUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QrCode
+        fields = ['link']
+
+    def update(self, instance, validated_data):
+        new_link = validated_data.get('link', instance.link)
+
+        if new_link != instance.link:
+            instance.link = new_link
+
+            if instance.image:
+                instance.image.delete(save=False)
+
+            qr_img = qrcode.make(new_link)
+            buffer = BytesIO()
+            qr_img.save(buffer, format='PNG')
+            file_name = f"qr_{instance.user.username}_{uuid.uuid4().hex[:8]}.png"
+            instance.image.save(file_name, ContentFile(buffer.getvalue()), save=False)
+
+        instance.save()
+        return instance
+
+
+class QrCodeGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QrCode
+        fields = '__all__'
