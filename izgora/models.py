@@ -4,10 +4,11 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from users.models import User
+from utils.compressor import optimize_image_to_webp
 
 
 def check_image_size(image):
-    if image.size > 4 * 1024 * 1024:
+    if image.size > 10 * 1024 * 1024:
         raise ValidationError("The image is too long")
 
 
@@ -15,7 +16,7 @@ class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='categories', null=True, blank=True)
     name = models.CharField(max_length=200)
     emoji = models.CharField(max_length=200, null=True, blank=True)
-    image = models.ImageField(upload_to='images/category/', validators=[
+    image = models.ImageField(upload_to='category/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
         check_image_size], blank=True, null=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
@@ -23,6 +24,13 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+
+        if self.image and not str(self.image.name).lower().endswith(".webp"):
+            try:
+                optimized_image = optimize_image_to_webp(self.image)
+                self.image = optimized_image
+            except Exception as e:
+                print(f"❌ Rasmni optimallashtirishda xatolik: {e}")
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -56,8 +64,17 @@ class ProductImage(models.Model):
     image = models.ImageField(upload_to='images/product/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'heic', 'heif']),
         check_image_size])
-
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if self.image and not str(self.image.name).lower().endswith(".webp"):
+            try:
+                optimized_image = optimize_image_to_webp(self.image)
+                self.image = optimized_image
+            except Exception as e:
+                print(f"❌ Rasmni optimallashtirishda xatolik: {e}")
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.product} | {self.id}"
