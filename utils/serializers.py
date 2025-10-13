@@ -1,6 +1,6 @@
 import uuid
-from io import BytesIO
 import qrcode
+from io import BytesIO
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 from utils.models import QrCode
@@ -78,6 +78,3 @@ class QrCodeGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = QrCode
         fields = '__all__'
-
-
-

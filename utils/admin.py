@@ -1,7 +1,7 @@
+import qrcode
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from django.core.files.base import ContentFile
-import qrcode
+from django.core.files.base import ContentFil
 from io import BytesIO
 from django.contrib import messages
 from django.core.exceptions import ValidationError

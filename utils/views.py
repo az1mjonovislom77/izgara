@@ -1,4 +1,5 @@
 import os
+import zipfile
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
@@ -8,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
 from .models import User, QrCode
-import zipfile
 from io import BytesIO
 
 
