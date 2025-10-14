@@ -9,7 +9,7 @@ from izgora.models import Category, Product, ProductImage
 from data import data
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ASSETS_PATH = os.path.join(BASE_DIR, "izgora", "images", "assets")
+ASSETS_PATH = os.path.join(BASE_DIR, "media", "assets")
 
 if not os.path.exists(ASSETS_PATH):
     raise FileNotFoundError(f"Papka topilmadi: {ASSETS_PATH}")
