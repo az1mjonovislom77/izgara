@@ -189,4 +189,4 @@ JAZZMIN_SETTINGS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / '/home/xmenuuz/x-menu.uz/django/izgora/images'
+MEDIA_ROOT = '/home/xmenuuz/x-menu.uz/django/izgora/images'
