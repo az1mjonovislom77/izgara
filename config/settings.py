@@ -1,7 +1,6 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from django.conf import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -10,7 +9,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False').strip().lower() in ('true', '1', 't', 'yes', 'y')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(",")
-
 
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 
@@ -149,7 +147,7 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": False,
 
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": settings.SECRET_KEY,
+    "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": "",
     "AUDIENCE": None,
     "ISSUER": None,
