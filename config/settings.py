@@ -134,8 +134,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/home/xmenuuz/x-menu.uz/django/static/'
-STATIC_ROOT = '/home/xmenuuz/x-menu.uz/django/staticfiles'
+STATIC_URL = '/home/xmenuuz/backend.x-menu.uz/django/static/'
+STATIC_ROOT = '/home/xmenuuz/backend.x-menu.uz/django/staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -190,4 +190,4 @@ JAZZMIN_SETTINGS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/xmenuuz/x-menu.uz/django/izgora/images'
+MEDIA_ROOT = '/home/xmenuuz/backend.x-menu.uz/django/izgora/images'
