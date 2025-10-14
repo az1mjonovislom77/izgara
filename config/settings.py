@@ -1,16 +1,17 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 from django.conf import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-yg)%b2@ph4oebvyp*u4l^nk#9b7nurvkq%of$^ib#m@@jjit@m'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'False').strip().lower() in ('true', '1', 't', 'yes', 'y')
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*", "x-menu.uz", "www.x-menu.uz"]
-#
-# CSRF_TRUSTED_ORIGINS = ["https://izgora.up.railway.app"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(",")
+
+ENVIRONMENT = os.getenv("ENVIRONMENT")
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -69,12 +70,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENVIRONMENT == 'production':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT')
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -173,4 +186,4 @@ JAZZMIN_SETTINGS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'izgora/images'
+MEDIA_ROOT = BASE_DIR / '/home/xmenuuz/x-menu.uz/django/izgora/images'
