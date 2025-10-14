@@ -72,7 +72,7 @@ class ProductVariants(models.Model):
 
 
 class ProductImage(models.Model):
-    image = models.ImageField(upload_to='images/product/', validators=[
+    image = models.ImageField(upload_to='product/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'heic', 'heif']),
         check_image_size])
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
