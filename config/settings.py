@@ -136,7 +136,7 @@ USE_TZ = True
 
 STATIC_URL = '/home/xmenuuz/x-menu.uz/django/static/'
 STATIC_ROOT = '/home/xmenuuz/x-menu.uz/django/staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'g
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
