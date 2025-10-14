@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import User
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, ProductVariants
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -31,13 +31,23 @@ class ProductImageSerializer(serializers.ModelSerializer):
         return None
 
 
+class ProductVariantSerializer(serializers.ModelSerializer):
+    diameter = serializers.IntegerField(source='diametr')
+
+    class Meta:
+        model = ProductVariants
+        fields = ['size', 'diameter', 'price']
+
+
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(source='productimage_set', many=True)
+    variants = ProductVariantSerializer(source='variant_products', many=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'price', 'created', 'category', 'category_name', 'images', 'rating']
+        fields = ['id', 'title', 'description', 'created', 'category', 'category_name', 'images', 'rating',
+                  'variants', ]
 
 
 class AdminCategorySerializer(serializers.ModelSerializer):

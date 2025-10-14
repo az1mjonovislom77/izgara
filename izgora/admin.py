@@ -1,9 +1,14 @@
 from django.contrib import admin
-from izgora.models import Category, Product, ProductImage
+from izgora.models import Category, Product, ProductImage, ProductVariants
 
 
 class ProductImageTabular(admin.TabularInline):
     model = ProductImage
+    extra = 1
+
+
+class ProductVariantTabular(admin.TabularInline):
+    model = ProductVariants
     extra = 1
 
 
@@ -26,8 +31,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'category', 'title', 'price',)
-    inlines = (ProductImageTabular,)
+    list_display = ('id', 'category', 'title')
+    inlines = (ProductImageTabular,ProductVariantTabular)
 
 
 @admin.register(ProductImage)

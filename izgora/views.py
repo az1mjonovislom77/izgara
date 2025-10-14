@@ -41,10 +41,12 @@ class ProductListCreateAPIView(APIView):
     def get(self, request):
         user = request.user
         if user.role == User.UserRoles.ADMIN:
-            products = Product.objects.select_related('category').prefetch_related('productimage_set').all().order_by(
+            products = Product.objects.select_related('category').prefetch_related('productimage_set',
+                                                                                   'variant_products').all().order_by(
                 '-created')
         else:
-            products = Product.objects.select_related('category').prefetch_related('productimage_set').filter(
+            products = Product.objects.select_related('category').prefetch_related('productimage_set',
+                                                                                   'variant_products').filter(
                 category__user=user
             ).order_by('-created')
 
@@ -105,21 +107,6 @@ class ProductDetailAPIView(APIView):
         product = get_object_or_404(Product, pk=pk)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@extend_schema(tags=['Product'])
-class ProductImageListCreateAPIView(APIView):
-    def get(self, request):
-        images = ProductImage.objects.all()
-        serializer = ProductImageSerializer(images, many=True, context={'request': request})
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ProductImageSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(tags=['Category'])

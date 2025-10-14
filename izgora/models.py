@@ -59,6 +59,16 @@ class Product(models.Model):
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
 
+class ProductVariants(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='variant_products')
+    size = models.CharField(max_length=100, null=True, blank=True)
+    diametr = models.IntegerField(null=True, blank=True)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.size and self.diametr and self.price)
+
+
 
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='images/product/', validators=[
