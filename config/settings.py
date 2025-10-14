@@ -1,16 +1,17 @@
 import os
+from decouple import config, Csv
 from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', 'False').strip().lower() in ('true', '1', 't', 'yes', 'y')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(",")
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
-ENVIRONMENT = os.getenv("ENVIRONMENT")
+ENVIRONMENT = config('ENVIRONMENT', default='local')
 
 AUTH_USER_MODEL = 'users.User'
 
