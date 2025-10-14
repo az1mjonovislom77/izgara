@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-yg)%b2@ph4oebvyp*u4l^nk#9b7nurvkq%of$^ib#m@@jjit@m
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*", "x-menu.uz", "www.x-menu.uz"]
 #
 # CSRF_TRUSTED_ORIGINS = ["https://izgora.up.railway.app"]
 
