@@ -43,11 +43,22 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(source='productimage_set', many=True)
     variants = ProductVariantSerializer(source='variant_products', many=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
+    price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'created', 'category', 'category_name', 'images', 'rating',
-                  'variants', ]
+        fields = [
+            'id', 'title', 'description', 'created', 'category', 'category_name',
+            'images', 'rating', 'price' 'variants',
+        ]
+
+    def get_price(self, obj):
+        try:
+            if hasattr(obj, 'variant_products') and obj.variant_products.exists():
+                return None
+        except Exception:
+            return obj.price
+        return obj.price
 
 
 class AdminCategorySerializer(serializers.ModelSerializer):
