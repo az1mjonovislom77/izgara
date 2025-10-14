@@ -190,4 +190,4 @@ JAZZMIN_SETTINGS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/xmenuuz/backend.x-menu.uz/django/media'
+MEDIA_ROOT = '/home/xmenuuz/backend.x-menu.uz/media'
