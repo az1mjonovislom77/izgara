@@ -8,7 +8,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'image', 'emoji']
+        fields = ['id', 'name', 'image', 'emoji', 'order']
 
     def get_image(self, obj):
         request = self.context.get('request')
@@ -56,7 +56,7 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['user', 'name', 'image', 'emoji', 'created']
+        fields = ['user', 'name', 'image', 'emoji', 'order', 'created']
         read_only_fields = ['slug', 'created']
 
     def get_image(self, obj):
@@ -72,7 +72,7 @@ class ProductByCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'emoji', 'image', 'created', 'products']
+        fields = ['id', 'name', 'slug', 'emoji', 'image', 'created', 'order', 'products']
 
     def get_image(self, obj):
         request = self.context.get('request')
