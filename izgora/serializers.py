@@ -62,17 +62,26 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(source='productimage_set', many=True)
+    images = ProductImageSerializer(source='productimage_set', many=True, required=False, read_only=True)
     variants = ProductVariantSerializer(source='variant_products', many=True, required=False)
     category_name = serializers.CharField(source='category.name', read_only=True)
     price = serializers.SerializerMethodField()
+    images_post = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
 
     class Meta:
         model = Product
         fields = [
             'id', 'title', 'description', 'created', 'category', 'category_name',
-            'images', 'rating', 'price', 'variants',
+            'images', 'rating', 'price', 'variants', 'images_post'
         ]
+
+    def create(self, validated_data):
+        images_post = validated_data.pop('images_post')
+        product = Product.objects.create(**validated_data)
+        for image in images_post:
+            ProductImage.objects.create(product=product, image=image)
+
+        return product
 
     def get_price(self, obj):
         try:
