@@ -117,6 +117,36 @@ class ProductSerializer(serializers.ModelSerializer):
             return obj.price
         return obj.price
 
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+
+        variants_raw = request.data.get('variants')
+        if variants_raw:
+            try:
+                variants_data = json.loads(variants_raw)
+                instance.variant_products.all().delete()
+                for variant in variants_data:
+                    ProductVariants.objects.create(
+                        product=instance,
+                        size=variant.get('size'),
+                        diametr=variant.get('diameter'),
+                        price=variant.get('price')
+                    )
+            except Exception as e:
+                print("❌ Variant update error:", e)
+
+        images_post = validated_data.pop('images_post', None)
+        if images_post is not None:
+            instance.productimage_set.all().delete()  # eski rasmlarni o‘chirish
+            for image in images_post:
+                ProductImage.objects.create(product=instance, image=image)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 
 class AdminCategorySerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
