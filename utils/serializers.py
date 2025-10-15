@@ -9,9 +9,7 @@ from users.models import User
 
 class QrCodeSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField(read_only=True)
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), required=False, allow_null=True
-    )
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = QrCode

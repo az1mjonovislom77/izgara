@@ -32,7 +32,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'category', 'title')
-    inlines = (ProductImageTabular,ProductVariantTabular)
+    inlines = (ProductImageTabular, ProductVariantTabular)
 
 
 @admin.register(ProductImage)

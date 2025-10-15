@@ -7,7 +7,7 @@ import pillow_heif
 pillow_heif.register_heif_opener()
 
 
-def optimize_image_to_webp(image_field,quality: int = 80) -> ContentFile:
+def optimize_image_to_webp(image_field, quality: int = 80) -> ContentFile:
     try:
         image = Image.open(image_field)
     except UnidentifiedImageError:

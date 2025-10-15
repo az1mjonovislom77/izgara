@@ -10,9 +10,7 @@ class MeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "name", "username", "role", "payment_status")
-        extra_kwargs = {
-            "id": {"read_only": True},
-        }
+        extra_kwargs = {"id": {"read_only": True}, }
 
     def validate_username(self, value):
         return value
@@ -48,10 +46,7 @@ class LoginSerializer(serializers.Serializer):
 
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
-
-    default_error_messages = {
-        'bad_token': 'Invalid or expired token.'
-    }
+    default_error_messages = {'bad_token': 'Invalid or expired token.'}
 
     def validate(self, attrs):
         self.token = attrs['refresh']

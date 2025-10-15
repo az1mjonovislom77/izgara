@@ -21,13 +21,8 @@ for item in data:
         print(f"⚠️ Category nomi bo‘sh, o‘tkazildi: {item.get('name')}")
         continue
 
-    # Category yaratish yoki mavjudini olish
-    category, created = Category.objects.get_or_create(
-        name=category_name,
-        defaults={"slug": slugify(category_name)}
-    )
+    category, created = Category.objects.get_or_create(name=category_name, defaults={"slug": slugify(category_name)})
 
-    # Rasmlar bilan match qilish
     image_name = str(item.get("image", "")).strip()
     matched_file = None
     for f in files_in_folder:

@@ -1,8 +1,8 @@
+import json
 from rest_framework import serializers
 from users.models import User
 from .models import Category, Product, ProductImage, ProductVariants
 from django.utils.text import slugify
-import json
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,7 +26,6 @@ class CategorySerializer(serializers.ModelSerializer):
         if not name or not user or user.is_anonymous:
             return attrs
 
-        from django.utils.text import slugify
         slug_val = slugify(name)
         qs = Category.objects.filter(user=user, slug=slug_val)
         if self.instance:
