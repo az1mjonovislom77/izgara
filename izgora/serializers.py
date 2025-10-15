@@ -65,7 +65,7 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(source='productimage_set', many=True, required=False, read_only=True)
     variants = ProductVariantSerializer(source='variant_products', many=True, required=False)
     category_name = serializers.CharField(source='category.name', read_only=True)
-    price = serializers.SerializerMethodField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
     images_post = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
 
     class Meta:
@@ -76,11 +76,13 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        images_post = validated_data.pop('images_post')
+        images_post = validated_data.pop('images_post', [])
+        variants_data = validated_data.pop('variant_products', [])
         product = Product.objects.create(**validated_data)
         for image in images_post:
             ProductImage.objects.create(product=product, image=image)
-
+        for variant in variants_data:
+            ProductVariants.objects.create(product=product, **variant)
         return product
 
     def get_price(self, obj):
