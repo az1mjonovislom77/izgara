@@ -63,7 +63,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(source='productimage_set', many=True)
-    variants = ProductVariantSerializer(source='variant_products', many=True)
+    variants = ProductVariantSerializer(source='variant_products', many=True, required=False)
     category_name = serializers.CharField(source='category.name', read_only=True)
     price = serializers.SerializerMethodField()
 
