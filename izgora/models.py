@@ -20,11 +20,23 @@ class Category(models.Model):
     image = models.ImageField(upload_to='category/', validators=[
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
         check_image_size], blank=True, null=True)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, blank=True)
     created = models.DateTimeField(default=timezone.now)
 
+    def clean(self):
+        base_slug = slugify(self.name) if self.name else ''
+        if not base_slug:
+            raise ValidationError({'name': 'Name cannot be empty.'})
+
+        slug_to_check = base_slug
+
+        qs = Category.objects.filter(user=self.user, slug=slug_to_check).exclude(pk=self.pk)
+        if qs.exists():
+            raise ValidationError({'slug': 'This slug already exists for this user.'})
+
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name) if self.name else ''
+        self.full_clean()
 
         if self.image and not str(self.image.name).lower().endswith(".webp"):
             try:
@@ -41,6 +53,9 @@ class Category(models.Model):
         db_table = 'category'
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'slug'], name='unique_user_slug')
+        ]
 
 
 class Product(models.Model):
@@ -60,15 +75,16 @@ class Product(models.Model):
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
 
+
 class ProductVariants(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='variant_products')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name='variant_products')
     size = models.CharField(max_length=100, null=True, blank=True)
     diametr = models.IntegerField(null=True, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
     def __str__(self):
         return str(self.size and self.diametr and self.price)
-
 
 
 class ProductImage(models.Model):

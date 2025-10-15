@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import User
 from .models import Category, Product, ProductImage, ProductVariants
+from django.utils.text import slugify
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -15,6 +16,27 @@ class CategorySerializer(serializers.ModelSerializer):
         if obj.image and hasattr(obj.image, 'url'):
             return request.build_absolute_uri(obj.image.url)
         return None
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+
+        name = attrs.get('name', getattr(self.instance, 'name', None))
+        if not name or not user or user.is_anonymous:
+            return attrs
+
+        from django.utils.text import slugify
+        slug_val = slugify(name)
+        qs = Category.objects.filter(user=user, slug=slug_val)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise serializers.ValidationError({
+                'slug': 'This slug already exists for this user.'
+            })
+
+        return attrs
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -75,6 +97,25 @@ class AdminCategorySerializer(serializers.ModelSerializer):
         if obj.image and hasattr(obj.image, 'url'):
             return request.build_absolute_uri(obj.image.url)
         return None
+
+    def validate(self, attrs):
+        name = attrs.get('name', getattr(self.instance, 'name', None))
+        user = attrs.get('user', getattr(self.instance, 'user', None))
+
+        if not name:
+            return attrs
+
+        slug_val = slugify(name)
+        qs = Category.objects.filter(user=user, slug=slug_val)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise serializers.ValidationError({
+                'slug': 'This slug already exists for this user.'
+            })
+
+        return attrs
 
 
 class ProductByCategorySerializer(serializers.ModelSerializer):
