@@ -2,6 +2,7 @@ from rest_framework import serializers
 from users.models import User
 from .models import Category, Product, ProductImage, ProductVariants
 from django.utils.text import slugify
+import json
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -75,14 +76,38 @@ class ProductSerializer(serializers.ModelSerializer):
             'images', 'rating', 'price', 'variants', 'images_post'
         ]
 
+    def get_variants(self, obj):
+        return [
+            {
+                "size": v.size,
+                "diameter": v.diametr,
+                "price": v.price
+            }
+            for v in obj.variant_products.all()
+        ]
+
     def create(self, validated_data):
+        request = self.context.get('request')
+
+        variants_raw = request.data.get('variants')
+        variants_data = []
+        if variants_raw:
+            try:
+                variants_data = json.loads(variants_raw)
+            except Exception as e:
+                print("❌ Variant JSON parsing error:", e)
+
         images_post = validated_data.pop('images_post', [])
-        variants_data = validated_data.pop('variant_products', [])
+
         product = Product.objects.create(**validated_data)
+
         for image in images_post:
             ProductImage.objects.create(product=product, image=image)
+
         for variant in variants_data:
-            ProductVariants.objects.create(product=product, **variant)
+            ProductVariants.objects.create(product=product, size=variant.get('size'), diametr=variant.get('diameter'),
+                                           price=variant.get('price'))
+
         return product
 
     def get_price(self, obj):
