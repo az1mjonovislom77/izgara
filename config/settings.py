@@ -1,4 +1,3 @@
-import os
 from decouple import config, Csv
 from datetime import timedelta
 from pathlib import Path
