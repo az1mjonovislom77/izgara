@@ -1,16 +1,18 @@
 import os
 import zipfile
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
-from .models import User, QrCode
 from io import BytesIO
-
+from django.shortcuts import redirect, get_object_or_404
+from django.http import JsonResponse
+from django.utils import timezone
+from django.db.models import F
+from .models import QrCode, QrScan, User
 
 @extend_schema(tags=['QR Code'])
 class QrCodeGenerateAPIView(APIView):
@@ -123,21 +125,53 @@ class QrCodesByUserDownloadAPIView(APIView):
         return response
 
 
-@extend_schema(tags=['QR Code'])
 class QrScanAPIView(APIView):
+    """
+    QR skanlash API:
+    - POST: scan_count +1, log, redirect asl link
+    - GET: faqat statistika, +1 qilinmaydi
+    """
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR')
 
     def get(self, request, qr_id):
         try:
             qr_code = QrCode.objects.get(id=qr_id)
         except QrCode.DoesNotExist:
-            return Response({"error": "QR kod topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({"error": "QR kod topilmadi"}, status=404)
 
-        qr_code.increment_scans()
+        now = timezone.now()
+        total = qr_code.scans.count()
+        daily = qr_code.scans.filter(created_at__date=now.date()).count()
+        monthly = qr_code.scans.filter(created_at__year=now.year, created_at__month=now.month).count()
+        yearly = qr_code.scans.filter(created_at__year=now.year).count()
 
-        return Response({
-            "message": "QR kod skanlandi ✅",
-            "total_scans": qr_code.total_scans,
-            "daily_scans": qr_code.daily_scans,
-            "monthly_scans": qr_code.monthly_scans,
-            "yearly_scans": qr_code.yearly_scans
-        }, status=status.HTTP_200_OK)
+        return JsonResponse({
+            "total_scans": total,
+            "daily_scans": daily,
+            "monthly_scans": monthly,
+            "yearly_scans": yearly
+        })
+
+    def post(self, request, qr_id):
+        try:
+            qr_code = QrCode.objects.get(id=qr_id)
+        except QrCode.DoesNotExist:
+            return JsonResponse({"error": "QR kod topilmadi"}, status=404)
+
+        # scan_count +1 (atomic)
+        QrCode.objects.filter(id=qr_code.id).update(scan_count=F('scan_count') + 1)
+        qr_code.refresh_from_db()
+
+        # log
+        QrScan.objects.create(
+            qr_code=qr_code,
+            ip_address=self.get_client_ip(request)
+        )
+
+        # redirect foydalanuvchini asl linkga
+        return redirect(qr_code.link)

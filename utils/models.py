@@ -15,12 +15,6 @@ class QrCode(models.Model):
     image = models.ImageField(upload_to='qrcodes', blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)
 
-    total_scans = models.PositiveIntegerField(default=0)
-    daily_scans = models.PositiveIntegerField(default=0)
-    monthly_scans = models.PositiveIntegerField(default=0)
-    yearly_scans = models.PositiveIntegerField(default=0)
-    last_scan = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         verbose_name = "QR Code"
         verbose_name_plural = "QR Codes"
@@ -31,30 +25,28 @@ class QrCode(models.Model):
 
     def save(self, *args, **kwargs):
         self.clean()
+
         if not self.image and self.link:
             qr_img = qrcode.make(self.link)
             buffer = BytesIO()
             qr_img.save(buffer, format='PNG')
             file_name = f"qr_{self.user.username}_{uuid.uuid4().hex[:8]}.png"
             self.image.save(file_name, ContentFile(buffer.getvalue()), save=False)
+
         super().save(*args, **kwargs)
-
-    def increment_scans(self):
-        now = timezone.now()
-
-        if not self.last_scan or self.last_scan.date() != now.date():
-            self.daily_scans = 0
-        if not self.last_scan or self.last_scan.year != now.year or self.last_scan.month != now.month:
-            self.monthly_scans = 0
-        if not self.last_scan or self.last_scan.year != now.year:
-            self.yearly_scans = 0
-
-        self.total_scans += 1
-        self.daily_scans += 1
-        self.monthly_scans += 1
-        self.yearly_scans += 1
-        self.last_scan = now
-        self.save()
 
     def __str__(self):
         return f"QR for {self.user.username}"
+
+
+class QrScan(models.Model):
+    qr_code = models.ForeignKey(QrCode, related_name='scans', on_delete=models.CASCADE)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "QR Scan"
+        verbose_name_plural = "QR Scans"
+
+    def __str__(self):
+        return f"Skan - {self.qr_code.user.username} ({self.created_at.date()})"
