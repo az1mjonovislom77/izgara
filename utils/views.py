@@ -136,57 +136,23 @@ class QrScanAPIView(APIView):
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
-            return x_forwarded_for.split(',')[0].strip()
+            return x_forwarded_for.split(',')[0]
         return request.META.get('REMOTE_ADDR')
 
     def post(self, request, qr_id):
-        qr_code = get_object_or_404(QrCode, id=qr_id)
+        try:
+            qr_code = QrCode.objects.get(id=qr_id)
+        except QrCode.DoesNotExist:
+            return Response({"error": "QR kod topilmadi"}, status=status.HTTP_404_NOT_FOUND)
 
         ip = self.get_client_ip(request)
-        user_agent = request.META.get('HTTP_USER_AGENT', '')[:1000]
-
-        device_uuid = request.COOKIES.get('device_uuid')
-        created_cookie = False
-        if not device_uuid:
-            device_uuid = uuid.uuid4().hex
-            created_cookie = True
-
-        QrScan.objects.create(
-            qr_code=qr_code,
-            ip_address=ip,
-            user_agent=user_agent,
-            device_uuid=device_uuid
-        )
-
         today = timezone.now().date()
-        year = today.year
-        month = today.month
 
-        stats = {
-            "today_unique": QrScan.objects.filter(qr_code=qr_code, created__date=today)
-                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
-            "month_unique": QrScan.objects.filter(qr_code=qr_code, created__year=year, created__month=month)
-                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
-            "year_unique": QrScan.objects.filter(qr_code=qr_code, created__year=year)
-                                          .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
-            "total_unique": QrScan.objects.filter(qr_code=qr_code)
-                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count()
-        }
+        QrScan.objects.create(qr_code=qr_code, ip_address=ip, date=today)
 
-        response = Response({
-            "message": "Skan saqlandi",
-            "statistics": stats
+        daily_unique_scans = QrScan.objects.filter(qr_code=qr_code, date=today).values('ip_address').distinct().count()
+
+        return Response({
+            "message": "Skan muvaffaqiyatli qayd etildi ✅",
+            "today_unique_scans": daily_unique_scans
         }, status=status.HTTP_201_CREATED)
-
-        if created_cookie:
-            max_age = 10 * 365 * 24 * 60 * 60
-            response.set_cookie(
-                'device_uuid',
-                device_uuid,
-                max_age=max_age,
-                httponly=True,
-                samesite='Lax'
-                # production-da secure=True qo'ying (HTTPS bo'lsa)
-            )
-
-        return response
