@@ -36,11 +36,31 @@ class QrCodeGenerateAPIView(APIView):
     def post(self, request):
         serializer = QrCodeSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        qr = serializer.save()
-        qr.link = request.data.get("link")
-        qr.save(update_fields=['link'])
 
-        return Response(QrCodeSerializer(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
+        # 1. Avval QR ma'lumotlarini saqlaymiz (link foydalanuvchidan kelgan bo'ladi)
+        qr = serializer.save()
+
+        # 2. Endi QR kodi ichiga scan URL generatsiya qilamiz
+        scan_url = request.build_absolute_uri(
+            reverse('qr-scan', args=[qr.id])
+        )
+
+        # 3. QR rasmini scan URL bilan qayta yaratamiz
+        import qrcode
+        from io import BytesIO
+        from django.core.files.base import ContentFile
+        import uuid
+
+        qr_img = qrcode.make(scan_url)
+        buffer = BytesIO()
+        qr_img.save(buffer, format='PNG')
+        file_name = f"qr_{qr.user.username}_{uuid.uuid4().hex[:8]}.png"
+        qr.image.save(file_name, ContentFile(buffer.getvalue()), save=False)
+
+        qr.save()
+
+        return Response(QrCodeSerializer(qr, context={'request': request}).data,
+                        status=status.HTTP_201_CREATED)
 
 
 @extend_schema(tags=['QR Code'])
