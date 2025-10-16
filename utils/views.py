@@ -13,6 +13,28 @@ from django.shortcuts import redirect, get_object_or_404
 from .models import QrCode, User, QrScanLog
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def qr_scan_view(request, qr_id):
+    qr = get_object_or_404(QrCode, id=qr_id)
+    ip = get_client_ip(request)
+
+    QrScanLog.objects.create(qr_code=qr, ip=ip)
+
+    qr.scan_count += 1
+    qr.last_scanned_ip = ip
+    qr.save(update_fields=['scan_count', 'last_scanned_ip'])
+
+    return redirect(qr.link)
+
+
 @extend_schema(tags=['QR Code'])
 class QrCodeGenerateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -125,27 +147,3 @@ class QrCodesByUserDownloadAPIView(APIView):
         response = HttpResponse(buffer, content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
         return response
-
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-
-def qr_scan_view(request, qr_id):
-    qr = get_object_or_404(QrCode, id=qr_id)
-    ip = get_client_ip(request)
-
-    # Scan log yaratish
-    QrScanLog.objects.create(qr_code=qr, ip=ip)
-
-    # Scan count update
-    qr.scan_count += 1
-    qr.last_scanned_ip = ip
-    qr.save(update_fields=['scan_count', 'last_scanned_ip'])
-
-    return redirect(qr.link)

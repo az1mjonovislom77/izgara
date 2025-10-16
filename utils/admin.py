@@ -1,4 +1,5 @@
 import qrcode
+from django.urls import reverse
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
@@ -52,6 +53,8 @@ class QrCodeAdmin(admin.ModelAdmin):
             raise ValidationError(f"{obj.user} uchun QR kod allaqachon mavjud!")
 
         if obj.link and not obj.image:
+            obj.link = request.build_absolute_uri(reverse('qr-scan', args=[obj.id]))
+
             qr_image = qrcode.make(obj.link)
             buffer = BytesIO()
             qr_image.save(buffer, format='PNG')
