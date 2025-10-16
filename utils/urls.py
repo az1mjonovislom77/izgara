@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import QrCodeGenerateAPIView, QrCodesByUserDownloadAPIView, QrCodeUpdateAPIView, QrCodeGetAPIView, \
-    QrCodeDeleteAPIView
+    QrCodeDeleteAPIView, QrScanAPIView
 
 urlpatterns = [
     path('admin-download/<int:user_id>/', QrCodesByUserDownloadAPIView.as_view(), name='qrcode-download-by-user'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('generate/', QrCodeGenerateAPIView.as_view(), name='qr-generate'),
     path('update/<int:pk>/', QrCodeUpdateAPIView.as_view(), name='qr-update'),
     path('delete/<int:pk>/', QrCodeDeleteAPIView.as_view(), name='qr-delete'),
+    path('qr/<int:qr_id>/scan/', QrScanAPIView.as_view(), name='qr-scan'),
 ]

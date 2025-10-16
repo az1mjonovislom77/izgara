@@ -37,3 +37,13 @@ class QrCode(models.Model):
 
     def __str__(self):
         return f"QR for {self.user.username}"
+
+
+class QrScan(models.Model):
+    qr_code = models.ForeignKey(QrCode, related_name='scans', on_delete=models.CASCADE)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Skan - {self.qr_code.user.username} ({self.date})"

@@ -8,9 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
-from .models import User, QrCode
+from .models import User, QrCode, QrScan
 from io import BytesIO
-
+from django.utils import timezone
 
 @extend_schema(tags=['QR Code'])
 class QrCodeGenerateAPIView(APIView):
@@ -121,3 +121,34 @@ class QrCodesByUserDownloadAPIView(APIView):
         response = HttpResponse(buffer, content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
         return response
+
+
+class QrScanAPIView(APIView):
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0]
+        return request.META.get('REMOTE_ADDR')
+
+    def post(self, request, qr_id):
+        try:
+            qr_code = QrCode.objects.get(id=qr_id)
+        except QrCode.DoesNotExist:
+            return Response({"error": "QR kod topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        ip = self.get_client_ip(request)
+        QrScan.objects.create(qr_code=qr_code, ip_address=ip)
+
+        total = qr_code.scans.count()
+        today = qr_code.scans.filter(date=timezone.now().date()).count()
+        month = qr_code.scans.filter(date__month=timezone.now().month).count()
+        year = qr_code.scans.filter(date__year=timezone.now().year).count()
+
+        return Response({
+            "message": "Skan muvaffaqiyatli saqlandi ✅",
+            "total_scans": total,
+            "daily_scans": today,
+            "monthly_scans": month,
+            "yearly_scans": year
+        }, status=status.HTTP_201_CREATED)
+
