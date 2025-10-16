@@ -13,8 +13,14 @@ from utils.models import QrCode, QrScan
 class QrCodeInline(admin.TabularInline):
     model = QrCode
     extra = 0
-    fields = ('link', 'qr_preview', 'daily_scans', 'monthly_scans', 'yearly_scans', 'created')
-    readonly_fields = ('qr_preview', 'daily_scans', 'monthly_scans', 'yearly_scans')
+    fields = (
+        'link', 'qr_preview', 'daily_scans',
+        'monthly_scans', 'yearly_scans', 'total_scans', 'created'
+    )
+    readonly_fields = (
+        'qr_preview', 'daily_scans',
+        'monthly_scans', 'yearly_scans', 'total_scans'
+    )
 
     def qr_preview(self, obj):
         if obj.image:
@@ -26,10 +32,7 @@ class QrCodeInline(admin.TabularInline):
     qr_preview.short_description = "QR Preview"
 
     def total_scans(self, obj):
-        try:
-            return obj.scans.count()
-        except Exception:
-            return 0
+        return obj.scans.count()
 
     total_scans.short_description = "Umumiy skanlar"
 
@@ -37,29 +40,28 @@ class QrCodeInline(admin.TabularInline):
         today = timezone.now().date()
         return obj.scans.filter(date=today).count()
 
-    daily_scans.short_description = "Kunlik"
+    daily_scans.short_description = "Kunlik skanlar"
 
     def monthly_scans(self, obj):
         today = timezone.now()
         return obj.scans.filter(date__year=today.year, date__month=today.month).count()
 
-    monthly_scans.short_description = "Oylik"
+    monthly_scans.short_description = "Oylik skanlar"
 
     def yearly_scans(self, obj):
         today = timezone.now()
         return obj.scans.filter(date__year=today.year).count()
 
-    yearly_scans.short_description = "Yillik"
-
+    yearly_scans.short_description = "Yillik skanlar"
 
     def save_model(self, request, obj, form, change):
-        existing_qr = QrCode.objects.filter(image=obj.image, user=obj.user)
+        existing_qr = QrCode.objects.filter(user=obj.user)
 
-        if existing_qr.exists():
+        if not change and existing_qr.exists():
             messages.error(request, "Bu user uchun QR kod allaqachon mavjud!")
             raise ValidationError("QR code already exists.")
 
-        elif obj.link:
+        if obj.link and not obj.image:
             qr_image = qrcode.make(obj.link)
             buffer = BytesIO()
             qr_image.save(buffer, format='PNG')
