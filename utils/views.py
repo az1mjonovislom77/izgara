@@ -8,9 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
-from .models import User, QrCode, QrScan
+from .models import User, QrCode
 from io import BytesIO
-from django.utils import timezone
 
 
 @extend_schema(tags=['QR Code'])
