@@ -29,17 +29,17 @@ class QrCodeAdmin(admin.ModelAdmin):
 
     def daily_scans(self, obj):
         today = timezone.now().date()
-        return obj.scans.filter(created_at__date=today).count()
+        return obj.scans.filter(created__date=today).count()
     daily_scans.short_description = "Kunlik skanlar"
 
     def monthly_scans(self, obj):
         now = timezone.now()
-        return obj.scans.filter(created_at__year=now.year, created_at__month=now.month).count()
+        return obj.scans.filter(created__year=now.year, created_at__month=now.month).count()
     monthly_scans.short_description = "Oylik skanlar"
 
     def yearly_scans(self, obj):
         now = timezone.now()
-        return obj.scans.filter(created_at__year=now.year).count()
+        return obj.scans.filter(created__year=now.year).count()
     yearly_scans.short_description = "Yillik skanlar"
 
     def save_model(self, request, obj, form, change):
