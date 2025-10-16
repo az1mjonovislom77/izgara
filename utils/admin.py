@@ -12,7 +12,7 @@ from .models import QrCode
 @admin.register(QrCode)
 class QrCodeAdmin(admin.ModelAdmin):
     list_display = (
-        'user', 'link', 'preview_qr','scans_count', 'daily_scans', 'monthly_scans', 'yearly_scans', 'created'
+        'user', 'link', 'preview_qr','scan_count', 'daily_scans', 'monthly_scans', 'yearly_scans', 'created'
     )
     readonly_fields = ('preview_qr', 'daily_scans', 'monthly_scans', 'yearly_scans')
     search_fields = ('user__username', 'link')
