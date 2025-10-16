@@ -1,3 +1,4 @@
+import hashlib
 import os
 import zipfile
 from django.http import HttpResponse
@@ -124,11 +125,17 @@ class QrCodesByUserDownloadAPIView(APIView):
         return response
 
 
+def make_device_hash(ip: str, user_agent: str, accept_lang: str = "") -> str:
+    """IP + user agent (+ ixtiyoriy accept-language) ga sha256."""
+    data = f"{ip}||{user_agent or ''}||{accept_lang or ''}"
+    return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
+
 class QrScanAPIView(APIView):
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
-            return x_forwarded_for.split(',')[0]
+            return x_forwarded_for.split(',')[0].strip()
         return request.META.get('REMOTE_ADDR')
 
     def post(self, request, qr_id):
@@ -138,24 +145,36 @@ class QrScanAPIView(APIView):
             return Response({"error": "QR code topilmadi"}, status=status.HTTP_404_NOT_FOUND)
 
         ip = self.get_client_ip(request)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')[:1000]  # limit uzunligi
+        accept_lang = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+
+        device_hash = make_device_hash(ip, user_agent, accept_lang)
         today = timezone.now().date()
-        month = today.month
-        year = today.year
 
         scan, created = QrScan.objects.get_or_create(
             qr_code=qr_code,
-            ip_address=ip,
-            date=today
+            device_hash=device_hash,
+            defaults={
+                'ip_address': ip,
+                'user_agent': user_agent,
+                'date': today,
+            }
         )
+
+        if not created and scan.date != today:
+            scan.date = today
+            scan.ip_address = ip
+            scan.user_agent = user_agent
+            scan.save(update_fields=['date', 'ip_address', 'user_agent'])
 
         stats = {
             "today": QrScan.objects.filter(qr_code=qr_code, date=today).count(),
-            "month": QrScan.objects.filter(qr_code=qr_code, date__month=month, date__year=year).count(),
-            "year": QrScan.objects.filter(qr_code=qr_code, date__year=year).count(),
-            "total_unique": QrScan.objects.filter(qr_code=qr_code).values("ip_address").distinct().count()
+            "month": QrScan.objects.filter(qr_code=qr_code, date__month=today.month, date__year=today.year).count(),
+            "year": QrScan.objects.filter(qr_code=qr_code, date__year=today.year).count(),
+            "total_unique": QrScan.objects.filter(qr_code=qr_code).values("device_hash").distinct().count()
         }
 
         return Response({
-            "message": "Bugungi skan saqlandi" if created else "Bu IP bugun allaqachon skan qilgan",
+            "message": "Bugungi skan saqlandi" if created else "Bu qurilma (IP+UA) bugun allaqachon skan qilgan",
             "statistics": stats
         }, status=status.HTTP_200_OK)

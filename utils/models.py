@@ -43,9 +43,11 @@ class QrScan(models.Model):
     qr_code = models.ForeignKey('QrCode', on_delete=models.CASCADE, related_name='scans')
     ip_address = models.GenericIPAddressField()
     date = models.DateField(default=timezone.now)
+    device_hash = models.CharField(max_length=64, db_index=True)
+    user_agent = models.TextField(blank=True, null=True)
 
     class Meta:
-        unique_together = ('qr_code', 'ip_address', 'date')
+        unique_together = ('qr_code', 'device_hash', 'date')
         verbose_name = "QR Scan"
         verbose_name_plural = "QR Scans"
 
