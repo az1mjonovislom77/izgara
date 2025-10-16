@@ -57,6 +57,6 @@ class QrCodeAdmin(admin.ModelAdmin):
 
 @admin.register(QrScan)
 class QrScanAdmin(admin.ModelAdmin):
-    list_display = ('qr_code', 'ip_address', 'date', 'created_at')
+    list_display = ('qr_code', 'ip_address', 'created_at')
     search_fields = ('qr_code__user__username', 'ip_address')
-    list_filter = ('date',)
+    list_filter = ('created_at',)
