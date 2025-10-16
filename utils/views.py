@@ -144,43 +144,40 @@ class QrScanAPIView(APIView):
 
         ip = self.get_client_ip(request)
         user_agent = request.META.get('HTTP_USER_AGENT', '')[:1000]
+
         device_uuid = request.COOKIES.get('device_uuid')
         created_cookie = False
         if not device_uuid:
-            # generate new uuid4 hex
             device_uuid = uuid.uuid4().hex
             created_cookie = True
 
-        today = timezone.now().date()
-
-        scan, created = QrScan.objects.get_or_create(
+        QrScan.objects.create(
             qr_code=qr_code,
-            device_uuid=device_uuid,
-            date=today,
-            defaults={
-                'ip_address': ip,
-                'user_agent': user_agent,
-            }
+            ip_address=ip,
+            user_agent=user_agent,
+            device_uuid=device_uuid
         )
 
-        if not created:
-            pass
+        today = timezone.now().date()
+        year = today.year
+        month = today.month
 
         stats = {
-            "today": QrScan.objects.filter(qr_code=qr_code, date=today).count(),
-            "month": QrScan.objects.filter(qr_code=qr_code, date__year=today.year, date__month=today.month).count(),
-            "year": QrScan.objects.filter(qr_code=qr_code, date__year=today.year).count(),
-            "total_unique": QrScan.objects.filter(qr_code=qr_code).values('device_uuid').distinct().exclude(device_uuid__isnull=True).count()
+            "today_unique": QrScan.objects.filter(qr_code=qr_code, created__date=today)
+                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
+            "month_unique": QrScan.objects.filter(qr_code=qr_code, created__year=year, created__month=month)
+                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
+            "year_unique": QrScan.objects.filter(qr_code=qr_code, created__year=year)
+                                          .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
+            "total_unique": QrScan.objects.filter(qr_code=qr_code)
+                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count()
         }
 
-        message = "Bugungi skan saqlandi" if created else "Bu qurilma bugun allaqachon skan qilgan"
-
-        response_data = {
-            "message": message,
+        response = Response({
+            "message": "Skan saqlandi",
             "statistics": stats
-        }
+        }, status=status.HTTP_201_CREATED)
 
-        response = Response(response_data, status=status.HTTP_200_OK)
         if created_cookie:
             max_age = 10 * 365 * 24 * 60 * 60
             response.set_cookie(
@@ -189,6 +186,7 @@ class QrScanAPIView(APIView):
                 max_age=max_age,
                 httponly=True,
                 samesite='Lax'
+                # production-da secure=True qo'ying (HTTPS bo'lsa)
             )
 
         return response
