@@ -4,13 +4,15 @@ from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
 from io import BytesIO
 from django.core.exceptions import ValidationError
-from utils.models import QrCode
+from django.utils import timezone
+from .models import QrCode, QrScan
 
 
 @admin.register(QrCode)
 class QrCodeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'link', 'preview_qr', 'total_scans', 'daily_scans', 'monthly_scans', 'yearly_scans',
-                    'created')
+    list_display = (
+        'user', 'link', 'preview_qr', 'total_scans', 'daily_scans', 'monthly_scans', 'yearly_scans', 'created'
+    )
     readonly_fields = ('preview_qr', 'total_scans', 'daily_scans', 'monthly_scans', 'yearly_scans')
     search_fields = ('user__username', 'link')
     list_filter = ('created',)
@@ -19,33 +21,33 @@ class QrCodeAdmin(admin.ModelAdmin):
         if obj.image:
             return mark_safe(f'<img src="{obj.image.url}" width="80" height="80" />')
         return "QR mavjud emas"
-
     preview_qr.short_description = "QR Ko‘rinishi"
 
     def total_scans(self, obj):
-        return obj.total_scans
-
+        return obj.scans.count()
     total_scans.short_description = "Umumiy skanlar"
 
     def daily_scans(self, obj):
-        return obj.daily_scans
-
+        today = timezone.now().date()
+        return obj.scans.filter(created_at__date=today).count()
     daily_scans.short_description = "Kunlik skanlar"
 
     def monthly_scans(self, obj):
-        return obj.monthly_scans
-
+        now = timezone.now()
+        return obj.scans.filter(created_at__year=now.year, created_at__month=now.month).count()
     monthly_scans.short_description = "Oylik skanlar"
 
     def yearly_scans(self, obj):
-        return obj.yearly_scans
-
+        now = timezone.now()
+        return obj.scans.filter(created_at__year=now.year).count()
     yearly_scans.short_description = "Yillik skanlar"
 
     def save_model(self, request, obj, form, change):
+        # Faqat yangi QR yaratishda tekshirish
         if not change and QrCode.objects.filter(user=obj.user).exists():
             raise ValidationError(f"{obj.user} uchun QR kod allaqachon mavjud!")
 
+        # QR rasm yaratish
         if obj.link and not obj.image:
             qr_image = qrcode.make(obj.link)
             buffer = BytesIO()
