@@ -74,14 +74,19 @@ class QrCodeUpdateSerializer(serializers.ModelSerializer):
 
 
 class QrCodeGetSerializer(serializers.ModelSerializer):
+    total_scans = serializers.SerializerMethodField()
     daily_scans = serializers.SerializerMethodField()
     monthly_scans = serializers.SerializerMethodField()
     yearly_scans = serializers.SerializerMethodField()
-    total_scans = serializers.SerializerMethodField()
 
     class Meta:
         model = QrCode
-        fields = '__all__'  # yoki specific list + scan fields
+        fields = [
+            'id', 'user', 'link', 'image', 'created',
+            'scan_count', 'last_scanned_ip',
+            'total_scans', 'daily_scans', 'monthly_scans', 'yearly_scans'
+        ]
+        read_only_fields = fields
 
     def get_total_scans(self, obj):
         return obj.scans.count()

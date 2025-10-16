@@ -16,38 +16,31 @@ from .models import QrCode, User, QrScanLog
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+        return x_forwarded_for.split(',')[0]
+    return request.META.get('REMOTE_ADDR')
 
 
 def qr_scan_view(request, qr_id):
     qr = get_object_or_404(QrCode, id=qr_id)
     ip = get_client_ip(request)
-
     QrScanLog.objects.create(qr_code=qr, ip=ip)
-
     qr.scan_count += 1
     qr.last_scanned_ip = ip
     qr.save(update_fields=['scan_count', 'last_scanned_ip'])
-
     return redirect(qr.link)
 
 
-@extend_schema(tags=['QR Code'])
 class QrCodeGenerateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = QrCodeSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer = QrCodeSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         qr = serializer.save()
         qr.link = request.build_absolute_uri(reverse('qr-scan', args=[qr.id]))
         qr.save(update_fields=['link'])
 
-        return Response(self.serializer_class(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
+        return Response(QrCodeSerializer(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
 @extend_schema(tags=['QR Code'])
