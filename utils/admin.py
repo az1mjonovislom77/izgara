@@ -34,7 +34,7 @@ class QrCodeAdmin(admin.ModelAdmin):
 
     def monthly_scans(self, obj):
         now = timezone.now()
-        return obj.scans.filter(created__year=now.year, created_at__month=now.month).count()
+        return obj.scans.filter(created__year=now.year, created__month=now.month).count()
     monthly_scans.short_description = "Oylik skanlar"
 
     def yearly_scans(self, obj):
