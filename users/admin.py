@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from izgora.models import Category
-from utils.admin import QrCodeInline
 from .models import User
 
 
@@ -52,7 +51,7 @@ class CategoryInline(admin.TabularInline):
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    inlines = [CategoryInline, QrCodeInline]
+    inlines = [CategoryInline]
 
     list_display = ('id', 'username', 'payment_status', 'name', 'role', 'is_active', 'is_staff', 'is_superuser')
     list_filter = ('role', 'is_staff', 'is_superuser')
