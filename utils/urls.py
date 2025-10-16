@@ -9,5 +9,5 @@ urlpatterns = [
     path('generate/', QrCodeGenerateAPIView.as_view(), name='qr-generate'),
     path('update/<int:pk>/', QrCodeUpdateAPIView.as_view(), name='qr-update'),
     path('delete/<int:pk>/', QrCodeDeleteAPIView.as_view(), name='qr-delete'),
-    path('<int:qr_id>/scan/', qr_scan_view, name='qr-scan'),
+    path('qr/<int:qr_id>/scan/', qr_scan_view, name='qr-scan'),
 ]
