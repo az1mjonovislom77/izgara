@@ -37,7 +37,7 @@ class QrCodeGenerateAPIView(APIView):
         serializer = QrCodeSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         qr = serializer.save()
-        qr.link = request.build_absolute_uri(reverse('qr-scan', args=[qr.id]))
+        qr.link = request.data.get("link")
         qr.save(update_fields=['link'])
 
         return Response(QrCodeSerializer(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
