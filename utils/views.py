@@ -132,7 +132,7 @@ class QrScanAPIView(APIView):
             return x_forwarded_for.split(',')[0]
         return request.META.get('REMOTE_ADDR')
 
-    def post(self, request, qr_id):
+    def get(self, request, qr_id):
         try:
             qr_code = QrCode.objects.get(id=qr_id)
         except QrCode.DoesNotExist:
