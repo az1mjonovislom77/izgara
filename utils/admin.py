@@ -14,7 +14,7 @@ class QrCodeAdmin(admin.ModelAdmin):
     list_display = (
         'user', 'link', 'preview_qr','scans_count', 'daily_scans', 'monthly_scans', 'yearly_scans', 'created'
     )
-    readonly_fields = ('preview_qr', 'total_scans', 'daily_scans', 'monthly_scans', 'yearly_scans')
+    readonly_fields = ('preview_qr', 'daily_scans', 'monthly_scans', 'yearly_scans')
     search_fields = ('user__username', 'link')
     list_filter = ('created',)
 
@@ -24,11 +24,6 @@ class QrCodeAdmin(admin.ModelAdmin):
         return "QR mavjud emas"
 
     preview_qr.short_description = "QR Ko‘rinishi"
-
-    def total_scans(self, obj):
-        return obj.scans.count()
-
-    total_scans.short_description = "Umumiy skanlar"
 
     def daily_scans(self, obj):
         today = timezone.now().date()
