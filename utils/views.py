@@ -1,6 +1,4 @@
-import hashlib
 import os
-import uuid
 import zipfile
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -10,9 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
-from .models import User, QrCode, QrScan
+from .models import User, QrCode
 from io import BytesIO
-from django.utils import timezone
 
 
 @extend_schema(tags=['QR Code'])
@@ -123,70 +120,4 @@ class QrCodesByUserDownloadAPIView(APIView):
         zip_filename = f"{target_user.username}_qrcodes.zip"
         response = HttpResponse(buffer, content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
-        return response
-
-
-def make_device_hash(ip: str, user_agent: str, accept_lang: str = "") -> str:
-    """IP + user agent (+ ixtiyoriy accept-language) ga sha256."""
-    data = f"{ip}||{user_agent or ''}||{accept_lang or ''}"
-    return hashlib.sha256(data.encode('utf-8')).hexdigest()
-
-
-class QrScanAPIView(APIView):
-    def get_client_ip(self, request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            return x_forwarded_for.split(',')[0].strip()
-        return request.META.get('REMOTE_ADDR')
-
-    def post(self, request, qr_id):
-        qr_code = get_object_or_404(QrCode, id=qr_id)
-
-        ip = self.get_client_ip(request)
-        user_agent = request.META.get('HTTP_USER_AGENT', '')[:1000]
-
-        device_uuid = request.COOKIES.get('device_uuid')
-        created_cookie = False
-        if not device_uuid:
-            device_uuid = uuid.uuid4().hex
-            created_cookie = True
-
-        QrScan.objects.create(
-            qr_code=qr_code,
-            ip_address=ip,
-            user_agent=user_agent,
-            device_uuid=device_uuid
-        )
-
-        today = timezone.now().date()
-        year = today.year
-        month = today.month
-
-        stats = {
-            "today_unique": QrScan.objects.filter(qr_code=qr_code, created__date=today)
-                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
-            "month_unique": QrScan.objects.filter(qr_code=qr_code, created__year=year, created__month=month)
-                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
-            "year_unique": QrScan.objects.filter(qr_code=qr_code, created__year=year)
-                                          .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count(),
-            "total_unique": QrScan.objects.filter(qr_code=qr_code)
-                                           .values('device_uuid').distinct().exclude(device_uuid__isnull=True).count()
-        }
-
-        response = Response({
-            "message": "Skan saqlandi",
-            "statistics": stats
-        }, status=status.HTTP_201_CREATED)
-
-        if created_cookie:
-            max_age = 10 * 365 * 24 * 60 * 60
-            response.set_cookie(
-                'device_uuid',
-                device_uuid,
-                max_age=max_age,
-                httponly=True,
-                samesite='Lax'
-                # production-da secure=True qo'ying (HTTPS bo'lsa)
-            )
-
         return response

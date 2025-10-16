@@ -37,17 +37,3 @@ class QrCode(models.Model):
 
     def __str__(self):
         return f"QR for {self.user.username}"
-
-
-class QrScan(models.Model):
-    qr_code = models.ForeignKey('utils.QrCode', on_delete=models.CASCADE, related_name='scans')
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    user_agent = models.TextField(blank=True, null=True)
-    device_uuid = models.CharField(max_length=64, db_index=True, null=True, blank=True)
-    date = models.DateField(default=timezone.now)
-
-    class Meta:
-        unique_together = (('qr_code', 'device_uuid', 'date'),)
-
-    def __str__(self):
-        return f"{self.device_uuid or self.ip_address} - {self.qr_code} on {self.date}"
