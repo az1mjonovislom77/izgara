@@ -74,7 +74,6 @@ class QrCodeUpdateSerializer(serializers.ModelSerializer):
 
 
 class QrCodeGetSerializer(serializers.ModelSerializer):
-    total_scans = serializers.SerializerMethodField()
     daily_scans = serializers.SerializerMethodField()
     monthly_scans = serializers.SerializerMethodField()
     yearly_scans = serializers.SerializerMethodField()
@@ -83,13 +82,9 @@ class QrCodeGetSerializer(serializers.ModelSerializer):
         model = QrCode
         fields = [
             'id', 'user', 'link', 'image', 'created',
-            'scan_count', 'last_scanned_ip',
-            'total_scans', 'daily_scans', 'monthly_scans', 'yearly_scans'
+            'scan_count', 'last_scanned_ip', 'daily_scans', 'monthly_scans', 'yearly_scans'
         ]
         read_only_fields = fields
-
-    def get_total_scans(self, obj):
-        return obj.scans.count()
 
     def get_daily_scans(self, obj):
         today = timezone.now().date()
