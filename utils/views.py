@@ -9,7 +9,7 @@ from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
 from io import BytesIO
 from django.shortcuts import redirect, get_object_or_404
-from .models import QrCode, User
+from .models import QrCode, User, QrScanLog
 
 
 @extend_schema(tags=['QR Code'])
@@ -123,26 +123,24 @@ class QrCodesByUserDownloadAPIView(APIView):
         return response
 
 
-def qr_scan_view(request: HttpRequest, qr_id: int):
-    qr = get_object_or_404(QrCode, id=qr_id)
-
-    # IP manzilni olish
-    ip = get_client_ip(request)
-
-    # Scan count +1
-    qr.scan_count += 1
-    qr.last_scanned_ip = ip
-    qr.save(update_fields=['scan_count', 'last_scanned_ip'])
-
-    # Asl linkga yo'naltirish
-    return redirect(qr.link)
-
-
 def get_client_ip(request):
-    """Foydalanuvchi IP sini olish"""
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+def qr_scan_view(request, qr_id):
+    qr = get_object_or_404(QrCode, id=qr_id)
+    ip = get_client_ip(request)
+
+    # Scan log yaratish
+    QrScanLog.objects.create(qr_code=qr, ip=ip)
+
+    # Scan count update
+    qr.scan_count += 1
+    qr.last_scanned_ip = ip
+    qr.save(update_fields=['scan_count', 'last_scanned_ip'])
+
+    return redirect(qr.link)
