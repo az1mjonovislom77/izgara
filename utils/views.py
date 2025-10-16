@@ -8,8 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
-from .models import User, QrCode
+from .models import User, QrCode, QrScan
 from io import BytesIO
+from django.utils import timezone
 
 
 @extend_schema(tags=['QR Code'])
@@ -121,3 +122,33 @@ class QrCodesByUserDownloadAPIView(APIView):
         response = HttpResponse(buffer, content_type="application/zip")
         response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
         return response
+
+
+class QrScanAPIView(APIView):
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0]
+        return request.META.get('REMOTE_ADDR')
+
+    def post(self, request, qr_id):
+        try:
+            qr_code = QrCode.objects.get(id=qr_id)
+        except QrCode.DoesNotExist:
+            return Response({"error": "QR code topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        ip = self.get_client_ip(request)
+        today = timezone.now().date()
+
+        scan, created = QrScan.objects.get_or_create(
+            qr_code=qr_code,
+            ip_address=ip,
+            date=today
+        )
+
+        total_scans = QrScan.objects.filter(qr_code=qr_code).values('ip_address').count()
+
+        return Response({
+            "message": "Bugungi skan hisoblandi" if created else "Bugun bu IP allaqachon skaner qilgan",
+            "unique_scans_total": total_scans
+        }, status=status.HTTP_200_OK)

@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 from rest_framework import serializers
 from utils.models import QrCode
 from users.models import User
+from django.utils import timezone
 
 
 class QrCodeSerializer(serializers.ModelSerializer):
@@ -76,3 +77,19 @@ class QrCodeGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = QrCode
         fields = '__all__'
+
+
+class QrCodeCountSerializer(serializers.ModelSerializer):
+    total_unique_scans = serializers.SerializerMethodField()
+    today_scans = serializers.SerializerMethodField()
+
+    class Meta:
+        model = QrCode
+        fields = ['id', 'user', 'link', 'image', 'created', 'total_unique_scans', 'today_scans']
+
+    def get_total_unique_scans(self, obj):
+        return obj.scans.values('ip_address', 'date').distinct().count()
+
+    def get_today_scans(self, obj):
+        today = timezone.now().date()
+        return obj.scans.filter(date=today).count()

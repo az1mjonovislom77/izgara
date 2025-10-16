@@ -5,15 +5,16 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
-from utils.models import QrCode
+from utils.models import QrCode, QrScan
 
 
 class QrCodeInline(admin.TabularInline):
     model = QrCode
     extra = 0
-    fields = ('link', 'qr_preview', 'created')
-    readonly_fields = ('qr_preview',)
+    fields = ('link', 'qr_preview', 'daily_scans', 'monthly_scans', 'yearly_scans', 'created')
+    readonly_fields = ('qr_preview', 'daily_scans', 'monthly_scans', 'yearly_scans')
 
     def qr_preview(self, obj):
         if obj.image:
@@ -23,6 +24,33 @@ class QrCodeInline(admin.TabularInline):
         return "QR mavjud emas"
 
     qr_preview.short_description = "QR Preview"
+
+    def total_scans(self, obj):
+        try:
+            return obj.scans.count()
+        except Exception:
+            return 0
+
+    total_scans.short_description = "Umumiy skanlar"
+
+    def daily_scans(self, obj):
+        today = timezone.now().date()
+        return obj.scans.filter(date=today).count()
+
+    daily_scans.short_description = "Kunlik"
+
+    def monthly_scans(self, obj):
+        today = timezone.now()
+        return obj.scans.filter(date__year=today.year, date__month=today.month).count()
+
+    monthly_scans.short_description = "Oylik"
+
+    def yearly_scans(self, obj):
+        today = timezone.now()
+        return obj.scans.filter(date__year=today.year).count()
+
+    yearly_scans.short_description = "Yillik"
+
 
     def save_model(self, request, obj, form, change):
         existing_qr = QrCode.objects.filter(image=obj.image, user=obj.user)
