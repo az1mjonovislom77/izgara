@@ -43,7 +43,6 @@ class QrScan(models.Model):
     qr_code = models.ForeignKey(QrCode, related_name='scans', on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    date = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "QR Scan"
