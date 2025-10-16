@@ -124,6 +124,7 @@ class QrCodesByUserDownloadAPIView(APIView):
         return response
 
 
+@extend_schema(tags=['QR Code'])
 class QrScanAPIView(APIView):
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -138,7 +139,6 @@ class QrScanAPIView(APIView):
             return Response({"error": "QR kod topilmadi"}, status=status.HTTP_404_NOT_FOUND)
 
         ip = self.get_client_ip(request)
-        # Har bir scan alohida saqlanadi
         QrScan.objects.create(qr_code=qr_code, ip_address=ip)
 
         now = timezone.now()
