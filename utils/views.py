@@ -1,6 +1,7 @@
 import os
 import zipfile
-from django.http import HttpResponse, HttpRequest
+from django.urls import reverse
+from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -21,6 +22,9 @@ class QrCodeGenerateAPIView(APIView):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         qr = serializer.save()
+        qr.link = request.build_absolute_uri(reverse('qr-scan', args=[qr.id]))
+        qr.save(update_fields=['link'])
+
         return Response(self.serializer_class(qr, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
@@ -130,6 +134,7 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
 
 def qr_scan_view(request, qr_id):
     qr = get_object_or_404(QrCode, id=qr_id)
