@@ -12,6 +12,7 @@ from .models import User, QrCode, QrScan
 from io import BytesIO
 from django.utils import timezone
 
+
 @extend_schema(tags=['QR Code'])
 class QrCodeGenerateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -137,18 +138,19 @@ class QrScanAPIView(APIView):
             return Response({"error": "QR kod topilmadi"}, status=status.HTTP_404_NOT_FOUND)
 
         ip = self.get_client_ip(request)
+        # Har bir scan alohida saqlanadi
         QrScan.objects.create(qr_code=qr_code, ip_address=ip)
 
+        now = timezone.now()
         total = qr_code.scans.count()
-        today = qr_code.scans.filter(date=timezone.now().date()).count()
-        month = qr_code.scans.filter(date__month=timezone.now().month).count()
-        year = qr_code.scans.filter(date__year=timezone.now().year).count()
+        daily = qr_code.scans.filter(created_at__date=now.date()).count()
+        monthly = qr_code.scans.filter(created_at__year=now.year, created_at__month=now.month).count()
+        yearly = qr_code.scans.filter(created_at__year=now.year).count()
 
         return Response({
             "message": "Skan muvaffaqiyatli saqlandi ✅",
             "total_scans": total,
-            "daily_scans": today,
-            "monthly_scans": month,
-            "yearly_scans": year
+            "daily_scans": daily,
+            "monthly_scans": monthly,
+            "yearly_scans": yearly
         }, status=status.HTTP_201_CREATED)
-
