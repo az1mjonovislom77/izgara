@@ -1,5 +1,7 @@
 import os
 import zipfile
+import qrcode
+import uuid
 from django.urls import reverse
 from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema
@@ -8,9 +10,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import QrCodeSerializer, QrCodeUpdateSerializer, QrCodeGetSerializer
-from io import BytesIO
 from django.shortcuts import redirect, get_object_or_404
 from .models import QrCode, User, QrScanLog
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 
 def get_client_ip(request):
@@ -36,20 +39,10 @@ class QrCodeGenerateAPIView(APIView):
     def post(self, request):
         serializer = QrCodeSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-
-        # 1. Avval QR ma'lumotlarini saqlaymiz (link foydalanuvchidan kelgan bo'ladi)
         qr = serializer.save()
-
-        # 2. Endi QR kodi ichiga scan URL generatsiya qilamiz
         scan_url = request.build_absolute_uri(
             reverse('qr-scan', args=[qr.id])
         )
-
-        # 3. QR rasmini scan URL bilan qayta yaratamiz
-        import qrcode
-        from io import BytesIO
-        from django.core.files.base import ContentFile
-        import uuid
 
         qr_img = qrcode.make(scan_url)
         buffer = BytesIO()
