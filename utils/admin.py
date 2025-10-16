@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import QrCode, QrScan
+from .models import QrCode
 
 
 @admin.register(QrCode)
