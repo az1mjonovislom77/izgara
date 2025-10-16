@@ -40,16 +40,16 @@ class QrCode(models.Model):
 
 
 class QrScan(models.Model):
-    qr_code = models.ForeignKey('QrCode', on_delete=models.CASCADE, related_name='scans')
-    ip_address = models.GenericIPAddressField()
-    date = models.DateField(default=timezone.now)
-    device_hash = models.CharField(max_length=64, db_index=True, null=True, blank=True)
+    qr_code = models.ForeignKey('utils.QrCode', on_delete=models.CASCADE, related_name='scans')
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(blank=True, null=True)
+    # yangi maydon: per-browser unique id (cookie orqali to'ldiriladi)
+    device_uuid = models.CharField(max_length=64, db_index=True, null=True, blank=True)
+    date = models.DateField(default=timezone.now)
 
     class Meta:
-        unique_together = ('qr_code', 'device_hash', 'date')
-        verbose_name = "QR Scan"
-        verbose_name_plural = "QR Scans"
+        # unique bo'lishi uchun device_uuid ishlatiladi; device_uuid bo'lmasa fallback qilinadi
+        unique_together = (('qr_code', 'device_uuid', 'date'),)
 
     def __str__(self):
-        return f"{self.ip_address} scanned {self.qr_code} on {self.date}"
+        return f"{self.device_uuid or self.ip_address} - {self.qr_code} on {self.date}"

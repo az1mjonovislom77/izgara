@@ -1,5 +1,6 @@
 import hashlib
 import os
+import uuid
 import zipfile
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -139,42 +140,55 @@ class QrScanAPIView(APIView):
         return request.META.get('REMOTE_ADDR')
 
     def post(self, request, qr_id):
-        try:
-            qr_code = QrCode.objects.get(id=qr_id)
-        except QrCode.DoesNotExist:
-            return Response({"error": "QR code topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+        qr_code = get_object_or_404(QrCode, id=qr_id)
 
         ip = self.get_client_ip(request)
-        user_agent = request.META.get('HTTP_USER_AGENT', '')[:1000]  # limit uzunligi
-        accept_lang = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+        user_agent = request.META.get('HTTP_USER_AGENT', '')[:1000]
+        device_uuid = request.COOKIES.get('device_uuid')
+        created_cookie = False
+        if not device_uuid:
+            # generate new uuid4 hex
+            device_uuid = uuid.uuid4().hex
+            created_cookie = True
 
-        device_hash = make_device_hash(ip, user_agent, accept_lang)
         today = timezone.now().date()
 
         scan, created = QrScan.objects.get_or_create(
             qr_code=qr_code,
-            device_hash=device_hash,
+            device_uuid=device_uuid,
+            date=today,
             defaults={
                 'ip_address': ip,
                 'user_agent': user_agent,
-                'date': today,
             }
         )
 
-        if not created and scan.date != today:
-            scan.date = today
-            scan.ip_address = ip
-            scan.user_agent = user_agent
-            scan.save(update_fields=['date', 'ip_address', 'user_agent'])
+        if not created:
+            pass
 
         stats = {
             "today": QrScan.objects.filter(qr_code=qr_code, date=today).count(),
-            "month": QrScan.objects.filter(qr_code=qr_code, date__month=today.month, date__year=today.year).count(),
+            "month": QrScan.objects.filter(qr_code=qr_code, date__year=today.year, date__month=today.month).count(),
             "year": QrScan.objects.filter(qr_code=qr_code, date__year=today.year).count(),
-            "total_unique": QrScan.objects.filter(qr_code=qr_code).values("device_hash").distinct().count()
+            "total_unique": QrScan.objects.filter(qr_code=qr_code).values('device_uuid').distinct().exclude(device_uuid__isnull=True).count()
         }
 
-        return Response({
-            "message": "Bugungi skan saqlandi" if created else "Bu qurilma (IP+UA) bugun allaqachon skan qilgan",
+        message = "Bugungi skan saqlandi" if created else "Bu qurilma bugun allaqachon skan qilgan"
+
+        response_data = {
+            "message": message,
             "statistics": stats
-        }, status=status.HTTP_200_OK)
+        }
+
+        response = Response(response_data, status=status.HTTP_200_OK)
+        if created_cookie:
+            max_age = 10 * 365 * 24 * 60 * 60
+            response.set_cookie(
+                'device_uuid',
+                device_uuid,
+                max_age=max_age,
+                httponly=True,
+                samesite='Lax'
+            )
+
+        return response
