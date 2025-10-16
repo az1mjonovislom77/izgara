@@ -126,11 +126,6 @@ class QrCodesByUserDownloadAPIView(APIView):
 
 @extend_schema(tags=['QR Code'])
 class QrScanAPIView(APIView):
-    def get_client_ip(self, request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            return x_forwarded_for.split(',')[0]
-        return request.META.get('REMOTE_ADDR')
 
     def get(self, request, qr_id):
         try:
@@ -138,19 +133,12 @@ class QrScanAPIView(APIView):
         except QrCode.DoesNotExist:
             return Response({"error": "QR kod topilmadi"}, status=status.HTTP_404_NOT_FOUND)
 
-        ip = self.get_client_ip(request)
-        QrScan.objects.create(qr_code=qr_code, ip_address=ip)
-
-        now = timezone.now()
-        total = qr_code.scans.count()
-        daily = qr_code.scans.filter(created_at__date=now.date()).count()
-        monthly = qr_code.scans.filter(created_at__year=now.year, created_at__month=now.month).count()
-        yearly = qr_code.scans.filter(created_at__year=now.year).count()
+        qr_code.increment_scans()
 
         return Response({
-            "message": "Skan muvaffaqiyatli saqlandi ✅",
-            "total_scans": total,
-            "daily_scans": daily,
-            "monthly_scans": monthly,
-            "yearly_scans": yearly
-        }, status=status.HTTP_201_CREATED)
+            "message": "QR kod skanlandi ✅",
+            "total_scans": qr_code.total_scans,
+            "daily_scans": qr_code.daily_scans,
+            "monthly_scans": qr_code.monthly_scans,
+            "yearly_scans": qr_code.yearly_scans
+        }, status=status.HTTP_200_OK)
