@@ -139,6 +139,8 @@ class QrScanAPIView(APIView):
 
         ip = self.get_client_ip(request)
         today = timezone.now().date()
+        month = today.month
+        year = today.year
 
         scan, created = QrScan.objects.get_or_create(
             qr_code=qr_code,
@@ -146,9 +148,14 @@ class QrScanAPIView(APIView):
             date=today
         )
 
-        total_scans = QrScan.objects.filter(qr_code=qr_code).values('ip_address').count()
+        stats = {
+            "today": QrScan.objects.filter(qr_code=qr_code, date=today).count(),
+            "month": QrScan.objects.filter(qr_code=qr_code, date__month=month, date__year=year).count(),
+            "year": QrScan.objects.filter(qr_code=qr_code, date__year=year).count(),
+            "total_unique": QrScan.objects.filter(qr_code=qr_code).values("ip_address").distinct().count()
+        }
 
         return Response({
-            "message": "Bugungi skan hisoblandi" if created else "Bugun bu IP allaqachon skaner qilgan",
-            "unique_scans_total": total_scans
+            "message": "Bugungi skan saqlandi" if created else "Bu IP bugun allaqachon skan qilgan",
+            "statistics": stats
         }, status=status.HTTP_200_OK)
