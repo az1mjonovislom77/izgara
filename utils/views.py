@@ -40,10 +40,7 @@ class QrCodeGenerateAPIView(APIView):
         serializer = QrCodeSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         qr = serializer.save()
-        scan_url = request.build_absolute_uri(
-            reverse('qr-scan', args=[qr.id])
-        )
-
+        scan_url = request.build_absolute_uri(reverse('qr-scan', args=[qr.id]))
         qr_img = qrcode.make(scan_url)
         buffer = BytesIO()
         qr_img.save(buffer, format='PNG')
