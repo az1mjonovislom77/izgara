@@ -6,7 +6,8 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from users.models import User
 from .models import Category, Product
-from .serializers import (CategorySerializer, ProductSerializer, AdminCategorySerializer, ProductByCategorySerializer, )
+from .serializers import (CategorySerializer, ProductSerializer, AdminCategorySerializer, ProductByCategorySerializer,
+                          CategoryStatusSerializer, )
 
 
 @extend_schema(tags=['Category'])
@@ -30,6 +31,37 @@ class CategoryListCreateAPIView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['Category'])
+class CategoryStatusAPIView(APIView):
+    serializer_class = CategoryStatusSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = CategoryStatusSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        category_id = serializer.validated_data['category_id']
+        display_type = serializer.validated_data['status']
+        user = request.user
+
+        if user.role == user.UserRoles.ADMIN:
+            category = get_object_or_404(Category, id=category_id)
+        else:
+            category = get_object_or_404(Category, id=category_id, user=user)
+
+        category.display_type = display_type
+        category.save()
+
+        return Response({
+            "message": f"{category.name} uchun holat '{display_type}' ga o‘zgartirildi ✅",
+            "category": {
+                "id": category.id,
+                "name": category.name,
+                "status": category.display_type
+            }
+        }, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Product'])

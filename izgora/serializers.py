@@ -5,6 +5,11 @@ from .models import Category, Product, ProductImage, ProductVariants
 from django.utils.text import slugify
 
 
+class CategoryStatusSerializer(serializers.Serializer):
+    category_id = serializers.IntegerField()
+    status = serializers.ChoiceField(choices=['emoji', 'image'])
+
+
 class CategorySerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
