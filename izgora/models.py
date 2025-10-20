@@ -22,14 +22,10 @@ class Category(models.Model):
     emoji = models.CharField(max_length=200, null=True, blank=True)
     order = models.IntegerField(default=1)
     image = models.ImageField(upload_to='category/', validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']),
-        check_image_size], blank=True, null=True)
-    display_type = models.CharField(
-        max_length=10,
-        choices=DISPLAY_CHOICES,
-        default='emoji',
-        help_text="Choose whether to show emoji or image"
-    )
+        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']), check_image_size], blank=True,
+                              null=True)
+    display_type = models.CharField(max_length=10, choices=DISPLAY_CHOICES, default='emoji',
+                                    help_text="Choose whether to show emoji or image")
     slug = models.SlugField(max_length=200, blank=True)
     created = models.DateTimeField(default=timezone.now)
 
@@ -39,7 +35,6 @@ class Category(models.Model):
             raise ValidationError({'name': 'Name cannot be empty.'})
 
         slug_to_check = base_slug
-
         qs = Category.objects.filter(user=self.user, slug=slug_to_check).exclude(pk=self.pk)
         if qs.exists():
             raise ValidationError({'slug': 'This slug already exists for this user.'})

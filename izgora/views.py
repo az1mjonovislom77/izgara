@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from users.models import User
 from .models import Category, Product
 from .serializers import (CategorySerializer, ProductSerializer, AdminCategorySerializer, ProductByCategorySerializer,
-                          CategoryStatusSerializer, )
+                          CategoryStatusSerializer)
 
 
 @extend_schema(tags=['Category'])
@@ -72,6 +72,57 @@ class CategoryStatusAPIView(APIView):
         else:
             return Response({"error": "Sizga bu amalni bajarish ruxsat etilmagan."},
                             status=status.HTTP_403_FORBIDDEN)
+
+
+@extend_schema(tags=['Category'])
+class AdminCategoryStatusAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = request.user
+
+        if user.role != User.UserRoles.ADMIN:
+            return Response({"error": "Faqat admin foydalanuvchilar kirishlari mumkin."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        target_user = get_object_or_404(User, id=user_id)
+        categories = Category.objects.filter(user=target_user)
+
+        if not categories.exists():
+            return Response({"message": "Bu foydalanuvchida category mavjud emas."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        unique_statuses = list(categories.values_list('display_type', flat=True).distinct())
+        status_value = unique_statuses[0] if len(unique_statuses) == 1 else "mixed"
+
+        return Response({
+            "status": status_value,
+        }, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['Category'])
+class CafeCategoryStatusAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.role != User.UserRoles.CAFE:
+            return Response({"error": "Faqat cafe foydalanuvchilar kirishlari mumkin."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        categories = Category.objects.filter(user=user)
+
+        if not categories.exists():
+            return Response({"message": "Sizda hali category mavjud emas."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        unique_statuses = list(categories.values_list('display_type', flat=True).distinct())
+        status_value = unique_statuses[0] if len(unique_statuses) == 1 else "mixed"
+
+        return Response({
+            "status": status_value,
+        }, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Product'])
