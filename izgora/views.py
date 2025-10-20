@@ -39,29 +39,39 @@ class CategoryStatusAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        user = request.user
         serializer = CategoryStatusSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        category_id = serializer.validated_data['category_id']
-        display_type = serializer.validated_data['status']
-        user = request.user
+        status_value = serializer.validated_data['status']
 
-        if user.role == user.UserRoles.ADMIN:
-            category = get_object_or_404(Category, id=category_id)
+        if user.role == User.UserRoles.CAFE:
+            updated_count = Category.objects.filter(user=user).update(display_type=status_value)
+            return Response({
+                "message": f"Sizning {updated_count} ta kategoriyangiz holati '{status_value}' ga o‘zgartirildi ✅"
+            }, status=status.HTTP_200_OK)
+
+        elif user.role == User.UserRoles.ADMIN:
+            user_id = serializer.validated_data.get('user_id')
+            if not user_id:
+                return Response(
+                    {"error": "Admin uchun user_id kiritilishi shart."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            try:
+                target_user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response({"error": "Bunday user topilmadi."}, status=status.HTTP_404_NOT_FOUND)
+
+            updated_count = Category.objects.filter(user=target_user).update(display_type=status_value)
+            return Response({
+                "message": f"{target_user.name} foydalanuvchisining {updated_count} ta kategoriyasi '{status_value}' holatiga o‘zgartirildi ✅"
+            }, status=status.HTTP_200_OK)
+
         else:
-            category = get_object_or_404(Category, id=category_id, user=user)
-
-        category.display_type = display_type
-        category.save()
-
-        return Response({
-            "message": f"{category.name} uchun holat '{display_type}' ga o‘zgartirildi ✅",
-            "category": {
-                "id": category.id,
-                "name": category.name,
-                "status": category.display_type
-            }
-        }, status=status.HTTP_200_OK)
+            return Response({"error": "Sizga bu amalni bajarish ruxsat etilmagan."},
+                            status=status.HTTP_403_FORBIDDEN)
 
 
 @extend_schema(tags=['Product'])

@@ -6,8 +6,8 @@ from django.utils.text import slugify
 
 
 class CategoryStatusSerializer(serializers.Serializer):
-    category_id = serializers.IntegerField()
     status = serializers.ChoiceField(choices=['emoji', 'image'])
+    user_id = serializers.IntegerField(required=False)
 
 
 class CategorySerializer(serializers.ModelSerializer):
