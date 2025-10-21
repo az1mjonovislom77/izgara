@@ -22,7 +22,9 @@ class Category(models.Model):
     emoji = models.CharField(max_length=200, null=True, blank=True)
     order = models.IntegerField(default=1)
     image = models.ImageField(upload_to='category/', validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp']), check_image_size], blank=True,
+        FileExtensionValidator(
+            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic', 'heif']),
+        check_image_size], blank=True,
                               null=True)
     display_type = models.CharField(max_length=10, choices=DISPLAY_CHOICES, default='emoji',
                                     help_text="Choose whether to show emoji or image")
@@ -94,7 +96,7 @@ class ProductVariants(models.Model):
 
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='product/', validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'heic', 'heif']),
+        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic', 'heif']),
         check_image_size])
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
