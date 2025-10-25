@@ -1,34 +1,39 @@
-import io, os
+from io import BytesIO
+
 from django.core.files.base import ContentFile
-from django.core.exceptions import ValidationError
-from PIL import Image, UnidentifiedImageError
+from PIL import Image
 import pillow_heif
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 pillow_heif.register_heif_opener()
 
 
-def optimize_image_to_webp(image_field, quality: int = 80) -> ContentFile:
-    try:
-        image = Image.open(image_field)
-    except UnidentifiedImageError:
-        raise ValidationError("❌ Noto‘g‘ri yoki qo‘llanilmagan rasm formati!")
+def optimize_image_to_webp(image_field, quality: int = 80, max_width=1200, ) -> ContentFile:
+    # Rasmni ochamiz
+    img = Image.open(image_field)
+    img = img.convert('RGB')  # WebP uchun zarur
 
-    image_field.seek(0)
-    original_size = len(image_field.read()) / (1024 * 1024)
-    image_field.seek(0)
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-    buffer = io.BytesIO()
-    image.save(buffer, format="WEBP", quality=quality, optimize=True, method=6)
+    # 1️⃣ Rasm kengligini kamaytirish
+    if img.width > max_width:
+        ratio = max_width / float(img.width)
+        new_height = int(float(img.height) * ratio)
+        img = img.resize((max_width, new_height), Image.LANCZOS)
+
+    # 2️⃣ WebP formatida siqish
+    buffer = BytesIO()
+    img.save(buffer, format='WEBP', quality=quality)
     buffer.seek(0)
 
-    base_name, _ = os.path.splitext(image_field.name)
-    new_filename = f"{base_name}.webp"
-    optimized_size = len(buffer.getvalue()) / (1024 * 1024)
+    # 3️⃣ Yangi nom yaratish
+    file_name = image_field.name.rsplit('.', 1)[0] + '.webp'
 
-    print(f"\n🖼 Rasm optimallashtirildi:")
-    print(f"   ▫️ Oldingi hajm: {original_size:.2f} MB")
-    print(f"   ▫️ Yangi hajm:    {optimized_size:.2f} MB")
-    print(f"   ▫️ Sifat:         {quality}%")
+    new_image = InMemoryUploadedFile(
+        buffer,  # fayl ma'lumotlari
+        'ImageField',  # maydon nomi
+        file_name,  # fayl nomi
+        'image/webp',  # MIME turi
+        sys.getsizeof(buffer),  # fayl hajmi
+        None  # charset
+    )
 
-    return ContentFile(buffer.read(), name=new_filename)
+    return new_image

@@ -23,7 +23,8 @@ class Category(models.Model):
     order = models.IntegerField(default=1)
     image = models.ImageField(upload_to='category/', validators=[
         FileExtensionValidator(
-            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic', 'heif']),
+            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
+                                'heif']),
         check_image_size], blank=True,
                               null=True)
     display_type = models.CharField(max_length=10, choices=DISPLAY_CHOICES, default='emoji',
@@ -45,12 +46,9 @@ class Category(models.Model):
         self.slug = slugify(self.name) if self.name else ''
         self.full_clean()
 
-        if self.image and not str(self.image.name).lower().endswith(".webp"):
-            try:
-                optimized_image = optimize_image_to_webp(self.image)
-                self.image = optimized_image
-            except Exception as e:
-                print(f"❌ Rasmni optimallashtirishda xatolik: {e}")
+        if self.image and not str(self.image.name).endswith('.webp'):
+            optimized_image = optimize_image_to_webp(self.image, quality=80)
+            self.image.save(optimized_image.name, optimized_image, save=False)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -96,18 +94,17 @@ class ProductVariants(models.Model):
 
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='product/', validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic', 'heif']),
+        FileExtensionValidator(
+            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
+                                'heif']),
         check_image_size])
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if self.image and not str(self.image.name).lower().endswith(".webp"):
-            try:
-                optimized_image = optimize_image_to_webp(self.image)
-                self.image = optimized_image
-            except Exception as e:
-                print(f"❌ Rasmni optimallashtirishda xatolik: {e}")
-
+        if self.image and not str(self.image.name).endswith('.webp'):
+            # Funksiyani chaqiramiz 👇
+            optimized_image = optimize_image_to_webp(self.image, quality=80)
+            self.image.save(optimized_image.name, optimized_image, save=False)
         super().save(*args, **kwargs)
 
     def __str__(self):
