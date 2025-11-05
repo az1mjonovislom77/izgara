@@ -4,7 +4,9 @@ from .views import (
     CategoryDetailAPIView,
     ProductListCreateAPIView,
     ProductDetailAPIView, AdminCategoryCreateAPIView, CategoryBySecretKeyAPIView, ProductCategoryBySecretKeyAPIView,
-    CategoryByUserIdAPIView, CategoryStatusAPIView, AdminCategoryStatusAPIView, CafeCategoryStatusAPIView, )
+    CategoryByUserIdAPIView, CategoryStatusAPIView, AdminCategoryStatusAPIView, CafeCategoryStatusAPIView,
+    HomeImageAPIView, HomeImageDetailAPIView, SplashImageDetailAPIView, SplashImageAPIView, LogoImageAPIView,
+    LogoImageDetailAPIView, )
 
 urlpatterns = [
     path('categories/', CategoryListCreateAPIView.as_view(), name='category-list-create'),
@@ -17,7 +19,12 @@ urlpatterns = [
     path('secret-key/category-products/', ProductCategoryBySecretKeyAPIView.as_view(),
          name='category_products_by_secret_key'),
     path('categories/by-user/<int:user_id>/', CategoryByUserIdAPIView.as_view(), name='categories-by-user'),
-
     path('products/', ProductListCreateAPIView.as_view(), name='product-list-create'),
     path('products/<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'),
+    path('homeimage/', HomeImageAPIView.as_view(), name='homeimage-list'),
+    path('homeimage/detail/<int:pk>/', HomeImageDetailAPIView.as_view(), name='homeimage-detail'),
+    path('logoimage/', LogoImageAPIView.as_view(), name='logoimage-list'),
+    path('logoimage/detail/<int:pk>/', LogoImageDetailAPIView.as_view(), name='logoimage-detail'),
+    path('splashimage/', SplashImageAPIView.as_view(), name='splashimage-list'),
+    path('splashimage/detail/<int:pk>/', SplashImageDetailAPIView.as_view(), name='splashimage-detail'),
 ]

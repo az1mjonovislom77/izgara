@@ -114,3 +114,70 @@ class ProductImage(models.Model):
         db_table = 'productimage'
         verbose_name = 'Product image'
         verbose_name_plural = 'Product images'
+
+
+class HomeImage(models.Model):
+    title = models.CharField(max_length=200, null=True, blank=True)
+    image = models.ImageField(upload_to='homeimage/', validators=[
+        FileExtensionValidator(
+            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
+                                'heif']),
+        check_image_size])
+
+    def save(self, *args, **kwargs):
+        if self.image and not str(self.image.name).endswith('.webp'):
+            optimized_image = optimize_image_to_webp(self.image, quality=80)
+            self.image.save(optimized_image.name, optimized_image, save=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'homeimage'
+        verbose_name = 'Home image'
+        verbose_name_plural = 'Home images'
+
+
+class LogoImage(models.Model):
+    image = models.ImageField(upload_to='logoimage/', validators=[
+        FileExtensionValidator(
+            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
+                                'heif']),
+        check_image_size])
+
+    def save(self, *args, **kwargs):
+        if self.image and not str(self.image.name).endswith('.webp'):
+            optimized_image = optimize_image_to_webp(self.image, quality=80)
+            self.image.save(optimized_image.name, optimized_image, save=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'logoimage'
+        verbose_name = 'Logo image'
+        verbose_name_plural = 'Logo images'
+
+
+class SplashImage(models.Model):
+    image = models.ImageField(upload_to='splashimage/', validators=[
+        FileExtensionValidator(
+            allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
+                                'heif']),
+        check_image_size])
+
+    def save(self, *args, **kwargs):
+        if self.image and not str(self.image.name).endswith('.webp'):
+            optimized_image = optimize_image_to_webp(self.image, quality=80)
+            self.image.save(optimized_image.name, optimized_image, save=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'splashimage'
+        verbose_name = 'Splash image'
+        verbose_name_plural = 'Splash images'

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from izgora.models import Category, Product, ProductImage, ProductVariants
+from izgora.models import Category, Product, ProductImage, ProductVariants, HomeImage, LogoImage, SplashImage
 
 
 class ProductImageTabular(admin.TabularInline):
@@ -38,3 +38,18 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ('product', 'image')
+
+
+@admin.register(HomeImage)
+class HomeImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'image')
+
+
+@admin.register(LogoImage)
+class LogoImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'image')
+
+
+@admin.register(SplashImage)
+class SplashImageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'image')

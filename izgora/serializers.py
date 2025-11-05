@@ -1,7 +1,7 @@
 import json
 from rest_framework import serializers
 from users.models import User
-from .models import Category, Product, ProductImage, ProductVariants
+from .models import Category, Product, ProductImage, ProductVariants, HomeImage, LogoImage, SplashImage
 from django.utils.text import slugify
 
 
@@ -201,3 +201,21 @@ class ProductByCategorySerializer(serializers.ModelSerializer):
         if obj.image and hasattr(obj.image, 'url'):
             return request.build_absolute_uri(obj.image.url)
         return None
+
+
+class HomeImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HomeImage
+        fields = ['id', 'title', 'image']
+
+
+class LogoImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LogoImage
+        fields = ['id', 'image']
+
+
+class SplashImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SplashImage
+        fields = ['id', 'image']

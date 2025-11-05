@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from users.models import User
-from .models import Category, Product
+from .models import Category, Product, HomeImage, LogoImage, SplashImage
 from .serializers import (CategorySerializer, ProductSerializer, AdminCategorySerializer, ProductByCategorySerializer,
-                          CategoryStatusSerializer)
+                          CategoryStatusSerializer, HomeImageSerializer, LogoImageSerializer, SplashImageSerializer)
 
 
 @extend_schema(tags=['Category'])
@@ -273,3 +273,135 @@ class CategoryByUserIdAPIView(APIView):
         categories = Category.objects.filter(user=user)
         serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['HomeImage'])
+class HomeImageAPIView(APIView):
+    serializer_class = HomeImageSerializer
+
+    def get(self, request):
+        try:
+            homeimage = HomeImage.objects.all()
+        except HomeImage.DoesNotExist:
+            return Response({"error": "HomeImage topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = HomeImageSerializer(homeimage, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = HomeImageSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['HomeImageDetail'])
+class HomeImageDetailAPIView(APIView):
+    serializer_class = HomeImageSerializer
+
+    def get(self, request, pk):
+        home = get_object_or_404(HomeImage, pk=pk)
+        serializer = HomeImageSerializer(home, context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        homeimage = get_object_or_404(HomeImage, pk=pk)
+        serializer = HomeImageSerializer(homeimage, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        homeimage = get_object_or_404(HomeImage, pk=pk)
+        homeimage.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(tags=['LogoImage'])
+class LogoImageAPIView(APIView):
+    serializer_class = LogoImageSerializer
+
+    def get(self, request):
+        try:
+            logoimage = LogoImage.objects.all()
+        except LogoImage.DoesNotExist:
+            return Response({"error": "LogoImage topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LogoImageSerializer(logoimage, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = LogoImageSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['LogoImageDetail'])
+class LogoImageDetailAPIView(APIView):
+    serializer_class = LogoImageSerializer
+
+    def get(self, request, pk):
+        logoimage = get_object_or_404(LogoImage, pk=pk)
+        serializer = LogoImageSerializer(logoimage, context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        logoimage = get_object_or_404(HomeImage, pk=pk)
+        serializer = LogoImageSerializer(logoimage, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        logoimage = get_object_or_404(LogoImage, pk=pk)
+        logoimage.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(tags=['SplashImage'])
+class SplashImageAPIView(APIView):
+    serializer_class = SplashImageSerializer
+
+    def get(self, request):
+        try:
+            splashimage = SplashImage.objects.all()
+        except SplashImage.DoesNotExist:
+            return Response({"error": "SplashImage topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = SplashImageSerializer(splashimage, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = SplashImageSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['SplashImageDetail'])
+class SplashImageDetailAPIView(APIView):
+    serializer_class = SplashImageSerializer
+
+    def get(self, request, pk):
+        splashimage = get_object_or_404(SplashImage, pk=pk)
+        serializer = SplashImageSerializer(splashimage, context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        splashimage = get_object_or_404(HomeImage, pk=pk)
+        serializer = SplashImageSerializer(splashimage, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        splashimage = get_object_or_404(SplashImage, pk=pk)
+        splashimage.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
