@@ -206,16 +206,16 @@ class ProductByCategorySerializer(serializers.ModelSerializer):
 class HomeImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = HomeImage
-        fields = ['id', 'title', 'image']
+        fields = ['id', 'user', 'title', 'image']
 
 
 class LogoImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = LogoImage
-        fields = ['id', 'image']
+        fields = ['id', 'user', 'image']
 
 
 class SplashImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = SplashImage
-        fields = ['id', 'image']
+        fields = ['id', 'user', 'image']

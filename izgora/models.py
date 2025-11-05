@@ -117,6 +117,7 @@ class ProductImage(models.Model):
 
 
 class HomeImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, )
     title = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(upload_to='homeimage/', validators=[
         FileExtensionValidator(
@@ -131,7 +132,7 @@ class HomeImage(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         db_table = 'homeimage'
@@ -140,6 +141,7 @@ class HomeImage(models.Model):
 
 
 class LogoImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='logoimage/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
@@ -153,7 +155,7 @@ class LogoImage(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         db_table = 'logoimage'
@@ -162,6 +164,7 @@ class LogoImage(models.Model):
 
 
 class SplashImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='splashimage/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
@@ -175,7 +178,7 @@ class SplashImage(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     class Meta:
         db_table = 'splashimage'

@@ -42,14 +42,14 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(HomeImage)
 class HomeImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'image')
+    list_display = ('id', 'title', 'user', 'image')
 
 
 @admin.register(LogoImage)
 class LogoImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'image')
+    list_display = ('id', 'user', 'image')
 
 
 @admin.register(SplashImage)
 class SplashImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'image')
+    list_display = ('id', 'user', 'image')
