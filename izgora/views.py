@@ -278,18 +278,29 @@ class CategoryByUserIdAPIView(APIView):
 @extend_schema(tags=['HomeImage'])
 class HomeImageAPIView(APIView):
     serializer_class = HomeImageSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        try:
-            homeimage = HomeImage.objects.all()
-        except HomeImage.DoesNotExist:
-            return Response({"error": "HomeImage topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+        user = request.user
 
-        serializer = HomeImageSerializer(homeimage, many=True, context={'request': request})
+        if user.role == User.UserRoles.ADMIN:
+            homeimages = HomeImage.objects.all()
+        else:
+            homeimages = HomeImage.objects.filter(user=user)
+
+        serializer = HomeImageSerializer(homeimages, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = HomeImageSerializer(data=request.data, context={'request': request})
+        user = request.user
+        data = request.data.copy()
+
+        if user.role == User.UserRoles.ADMIN:
+            pass
+        else:
+            data['user'] = user.id
+
+        serializer = HomeImageSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -299,6 +310,7 @@ class HomeImageAPIView(APIView):
 @extend_schema(tags=['HomeImageDetail'])
 class HomeImageDetailAPIView(APIView):
     serializer_class = HomeImageSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
         home = get_object_or_404(HomeImage, pk=pk)
@@ -322,18 +334,29 @@ class HomeImageDetailAPIView(APIView):
 @extend_schema(tags=['LogoImage'])
 class LogoImageAPIView(APIView):
     serializer_class = LogoImageSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        try:
+        user = request.user
+
+        if user.role == User.UserRoles.ADMIN:
             logoimage = LogoImage.objects.all()
-        except LogoImage.DoesNotExist:
-            return Response({"error": "LogoImage topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            logoimage = LogoImage.objects.filter(user=user)
 
         serializer = LogoImageSerializer(logoimage, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = LogoImageSerializer(data=request.data, context={'request': request})
+        user = request.user
+        data = request.data.copy()
+
+        if user.role == User.UserRoles.ADMIN:
+            pass
+        else:
+            data['user'] = user.id
+
+        serializer = LogoImageSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -343,6 +366,7 @@ class LogoImageAPIView(APIView):
 @extend_schema(tags=['LogoImageDetail'])
 class LogoImageDetailAPIView(APIView):
     serializer_class = LogoImageSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
         logoimage = get_object_or_404(LogoImage, pk=pk)
@@ -366,18 +390,29 @@ class LogoImageDetailAPIView(APIView):
 @extend_schema(tags=['SplashImage'])
 class SplashImageAPIView(APIView):
     serializer_class = SplashImageSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        try:
-            splashimage = SplashImage.objects.all()
-        except SplashImage.DoesNotExist:
-            return Response({"error": "SplashImage topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+        user = request.user
 
-        serializer = SplashImageSerializer(splashimage, many=True, context={'request': request})
+        if user.role == User.UserRoles.ADMIN:
+            splashimages = SplashImage.objects.all()
+        else:
+            splashimages = SplashImage.objects.filter(user=user)
+
+        serializer = SplashImageSerializer(splashimages, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = SplashImageSerializer(data=request.data, context={'request': request})
+        user = request.user
+        data = request.data.copy()
+
+        if user.role == User.UserRoles.ADMIN:
+            pass
+        else:
+            data['user'] = user.id
+
+        serializer = SplashImageSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -387,6 +422,7 @@ class SplashImageAPIView(APIView):
 @extend_schema(tags=['SplashImageDetail'])
 class SplashImageDetailAPIView(APIView):
     serializer_class = SplashImageSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
         splashimage = get_object_or_404(SplashImage, pk=pk)

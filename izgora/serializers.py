@@ -204,18 +204,24 @@ class ProductByCategorySerializer(serializers.ModelSerializer):
 
 
 class HomeImageSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+
     class Meta:
         model = HomeImage
         fields = ['id', 'user', 'title', 'image']
 
 
 class LogoImageSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+
     class Meta:
         model = LogoImage
         fields = ['id', 'user', 'image']
 
 
 class SplashImageSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+
     class Meta:
         model = SplashImage
         fields = ['id', 'user', 'image']
