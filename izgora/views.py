@@ -218,7 +218,7 @@ class AdminCategoryCreateAPIView(APIView):
 
 
 @extend_schema(tags=['Category'])
-class CategoryBySecretKeyAPIView(APIView):
+class DataBySecretKeyAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         secret_key = request.query_params.get('secret_key')
@@ -238,8 +238,18 @@ class CategoryBySecretKeyAPIView(APIView):
             )
 
         categories = Category.objects.filter(user=user)
-        serializer = CategorySerializer(categories, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        home_images = HomeImage.objects.filter(user=user)
+        logo_images = LogoImage.objects.filter(user=user)
+        splash_images = SplashImage.objects.filter(user=user)
+
+        data = {
+            "categories": CategorySerializer(categories, many=True, context={'request': request}).data,
+            "home_images": HomeImageSerializer(home_images, many=True, context={'request': request}).data,
+            "logo_images": LogoImageSerializer(logo_images, many=True, context={'request': request}).data,
+            "splash_images": SplashImageSerializer(splash_images, many=True, context={'request': request}).data,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Category'])

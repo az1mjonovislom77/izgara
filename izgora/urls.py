@@ -3,7 +3,7 @@ from .views import (
     CategoryListCreateAPIView,
     CategoryDetailAPIView,
     ProductListCreateAPIView,
-    ProductDetailAPIView, AdminCategoryCreateAPIView, CategoryBySecretKeyAPIView, ProductCategoryBySecretKeyAPIView,
+    ProductDetailAPIView, AdminCategoryCreateAPIView, DataBySecretKeyAPIView, ProductCategoryBySecretKeyAPIView,
     CategoryByUserIdAPIView, CategoryStatusAPIView, AdminCategoryStatusAPIView, CafeCategoryStatusAPIView,
     HomeImageAPIView, HomeImageDetailAPIView, SplashImageDetailAPIView, SplashImageAPIView, LogoImageAPIView,
     LogoImageDetailAPIView, )
@@ -15,7 +15,7 @@ urlpatterns = [
     path('categories/status/cafe/', CafeCategoryStatusAPIView.as_view(), name='cafe-category-status'),
     path('admin/categories/', AdminCategoryCreateAPIView.as_view(), name='admin-category-create'),
     path('categories/<int:pk>/', CategoryDetailAPIView.as_view(), name='category-detail'),
-    path('secret-key/categories/', CategoryBySecretKeyAPIView.as_view(), name='categories_by_secret_key'),
+    path('secret-key/main-image/', DataBySecretKeyAPIView.as_view(), name='categories_by_secret_key'),
     path('secret-key/category-products/', ProductCategoryBySecretKeyAPIView.as_view(),
          name='category_products_by_secret_key'),
     path('categories/by-user/<int:user_id>/', CategoryByUserIdAPIView.as_view(), name='categories-by-user'),
