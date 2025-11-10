@@ -374,7 +374,7 @@ class LogoImageDetailAPIView(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-        logoimage = get_object_or_404(HomeImage, pk=pk)
+        logoimage = get_object_or_404(LogoImage, pk=pk)
         serializer = LogoImageSerializer(logoimage, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -430,7 +430,7 @@ class SplashImageDetailAPIView(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-        splashimage = get_object_or_404(HomeImage, pk=pk)
+        splashimage = get_object_or_404(SplashImage, pk=pk)
         serializer = SplashImageSerializer(splashimage, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
