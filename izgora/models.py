@@ -21,7 +21,7 @@ class Category(models.Model):
     name = models.CharField(max_length=200)
     emoji = models.CharField(max_length=200, null=True, blank=True)
     order = models.IntegerField(default=1)
-    image = models.ImageField(upload_to='category/', validators=[
+    image = models.FileField(upload_to='category/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
                                 'heif']),
@@ -93,7 +93,7 @@ class ProductVariants(models.Model):
 
 
 class ProductImage(models.Model):
-    image = models.ImageField(upload_to='product/', validators=[
+    image = models.FileField(upload_to='product/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
                                 'heif']),
@@ -119,7 +119,7 @@ class ProductImage(models.Model):
 class HomeImage(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, )
     title = models.CharField(max_length=200, null=True, blank=True)
-    image = models.ImageField(upload_to='homeimage/', validators=[
+    image = models.FileField(upload_to='homeimage/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
                                 'heif']),
@@ -142,7 +142,7 @@ class HomeImage(models.Model):
 
 class LogoImage(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    image = models.ImageField(upload_to='logoimage/', validators=[
+    image = models.FileField(upload_to='logoimage/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
                                 'heif']),
@@ -165,7 +165,7 @@ class LogoImage(models.Model):
 
 class SplashImage(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    image = models.ImageField(upload_to='splashimage/', validators=[
+    image = models.FileField(upload_to='splashimage/', validators=[
         FileExtensionValidator(
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
                                 'heif']),
