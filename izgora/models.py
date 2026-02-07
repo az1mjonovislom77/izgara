@@ -68,7 +68,7 @@ class Product(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
-    price = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    price = models.IntegerField(default=0, null=True, blank=True)
     created = models.DateTimeField(default=timezone.now)
     rating = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
