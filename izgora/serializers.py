@@ -70,7 +70,7 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(source='productimage_set', many=True, required=False, read_only=True)
     variants = ProductVariantSerializer(source='variant_products', many=True, required=False)
     category_name = serializers.CharField(source='category.name', read_only=True)
-    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    price = serializers.IntegerField(required=False)
     images_post = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
 
     class Meta:
