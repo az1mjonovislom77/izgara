@@ -26,7 +26,7 @@ class Category(models.Model):
             allowed_extensions=['jpg', 'jpeg', 'png', 'svg', 'webp', 'JPG', 'JPEG', 'PNG', 'SVG', 'WEBP', 'heic',
                                 'heif']),
         check_image_size], blank=True,
-                              null=True)
+                             null=True)
     display_type = models.CharField(max_length=10, choices=DISPLAY_CHOICES, default='emoji',
                                     help_text="Choose whether to show emoji or image")
     slug = models.SlugField(max_length=200, blank=True)
@@ -86,7 +86,7 @@ class ProductVariants(models.Model):
                                 related_name='variant_products')
     size = models.CharField(max_length=100, null=True, blank=True)
     diametr = models.IntegerField(null=True, blank=True)
-    price = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    price = models.IntegerField(default=0, null=True, blank=True)
 
     def __str__(self):
         return str(self.size and self.diametr and self.price)
@@ -102,7 +102,6 @@ class ProductImage(models.Model):
 
     def save(self, *args, **kwargs):
         if self.image and not str(self.image.name).endswith('.webp'):
-            # Funksiyani chaqiramiz 👇
             optimized_image = optimize_image_to_webp(self.image, quality=80)
             self.image.save(optimized_image.name, optimized_image, save=False)
         super().save(*args, **kwargs)

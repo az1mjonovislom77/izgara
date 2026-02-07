@@ -137,10 +137,9 @@ class ProductListCreateAPIView(APIView):
                                                                                    'variant_products').all().order_by(
                 '-created')
         else:
-            products = Product.objects.select_related('category').prefetch_related('productimage_set',
-                                                                                   'variant_products').filter(
-                category__user=user
-            ).order_by('-created')
+            products = (Product.objects.select_related('category')
+                        .prefetch_related('productimage_set', 'variant_products')
+                        .filter(category__user=user).order_by('-created'))
 
         serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response(serializer.data)
